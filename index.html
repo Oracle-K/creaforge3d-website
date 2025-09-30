@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CréaForge3D - Impression 3D sur mesure et objets personnalisables. Transformez vos idées en réalité avec notre service d'impression 3D professionnel.">
+    <meta name="keywords" content="impression 3D, objets 3d personnalisables, impression 3d sur mesure, prototypage 3d, figurines personnalisées, objets décoratifs">
+    <title>CréaForge3D - Impression 3D Sur Mesure | Objets Personnalisables</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>CréaForge<span class="logo-3d">3D</span></h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#accueil" class="nav-link">Accueil</a></li>
+                <li class="nav-item"><a href="#produits" class="nav-link">Produits</a></li>
+                <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="#about" class="nav-link">À Propos</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="accueil" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Transformez vos <span class="highlight">idées</span> en réalité avec l'impression 3D</h1>
+                <p class="hero-description">Créez des objets uniques et personnalisés grâce à notre expertise en impression 3D. De la conception à la réalisation, nous donnons vie à vos projets.</p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Demander un devis</a>
+                    <a href="#produits" class="btn btn-secondary">Voir nos créations</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="printer-animation">
+                    <i class="fas fa-cube"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Nos Services</h2>
+            <div class="services-grid">
+                <div class="service-card">
+                    <i class="fas fa-palette"></i>
+                    <h3>Objets Personnalisés</h3>
+                    <p>Créez des objets uniques selon vos spécifications. Figurines, bijoux, décorations... Tout est possible !</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Produits Prêts</h3>
+                    <p>Découvrez notre gamme d'objets déjà conçus et prêts à être imprimés. Livraison rapide garantie.</p>
+                </div>
+                <div class="service-card">
+                    <i class="fas fa-cogs"></i>
+                    <h3>Prototypage</h3>
+                    <p>Testez vos idées avec nos services de prototypage rapide. Parfait pour les entrepreneurs et inventeurs.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="produits" class="products">
+        <div class="container">
+            <h2 class="section-title">Nos Créations</h2>
+            <div class="product-categories">
+                <button class="category-btn active" data-category="all">Tout</button>
+                <button class="category-btn" data-category="personnalise">Personnalisé</button>
+                <button class="category-btn" data-category="decoration">Décoration</button>
+                <button class="category-btn" data-category="utilitaire">Utilitaire</button>
+                <button class="category-btn" data-category="jouets">Jouets</button>
+            </div>
+            <div class="products-grid">
+                <div class="product-card" data-category="personnalise">
+                    <div class="product-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Figurine Personnalisée</h3>
+                        <p>Créez votre figurine unique à partir de vos photos</p>
+                        <div class="product-price">À partir de 25€</div>
+                        <button class="btn btn-small">Commander</button>
+                    </div>
+                </div>
+                <div class="product-card" data-category="decoration">
+                    <div class="product-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-home"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Vase Géométrique</h3>
+                        <p>Design moderne pour votre décoration d'intérieur</p>
+                        <div class="product-price">18€</div>
+                        <button class="btn btn-small">Commander</button>
+                    </div>
+                </div>
+                <div class="product-card" data-category="utilitaire">
+                    <div class="product-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Support Téléphone</h3>
+                        <p>Support ergonomique pour votre bureau</p>
+                        <div class="product-price">12€</div>
+                        <button class="btn btn-small">Commander</button>
+                    </div>
+                </div>
+                <div class="product-card" data-category="jouets">
+                    <div class="product-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-puzzle-piece"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Puzzle 3D</h3>
+                        <p>Puzzle éducatif pour enfants et adultes</p>
+                        <div class="product-price">15€</div>
+                        <button class="btn btn-small">Commander</button>
+                    </div>
+                </div>
+                <div class="product-card" data-category="personnalise">
+                    <div class="product-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Bijoux Sur Mesure</h3>
+                        <p>Bagues, pendentifs et accessoires personnalisés</p>
+                        <div class="product-price">À partir de 20€</div>
+                        <button class="btn btn-small">Commander</button>
+                    </div>
+                </div>
+                <div class="product-card" data-category="decoration">
+                    <div class="product-image">
+                        <div class="placeholder-image">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3>Lampe Décorative</h3>
+                        <p>Éclairage d'ambiance avec motifs personnalisés</p>
+                        <div class="product-price">35€</div>
+                        <button class="btn btn-small">Commander</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">Pourquoi Choisir CréaForge3D ?</h2>
+                    <div class="about-features">
+                        <div class="feature">
+                            <i class="fas fa-medal"></i>
+                            <div>
+                                <h3>Qualité Premium</h3>
+                                <p>Matériaux de haute qualité et finitions soignées pour des objets durables</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h3>Livraison Rapide</h3>
+                                <p>Délais de production optimisés, livraison en 3-7 jours ouvrés</p>
+                            </div>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-comments"></i>
+                            <div>
+                                <h3>Support Personnalisé</h3>
+                                <p>Accompagnement de A à Z pour concrétiser parfaitement votre projet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-stats">
+                    <div class="stat">
+                        <h3>500+</h3>
+                        <p>Objets créés</p>
+                    </div>
+                    <div class="stat">
+                        <h3>98%</h3>
+                        <p>Clients satisfaits</p>
+                    </div>
+                    <div class="stat">
+                        <h3>48h</h3>
+                        <p>Délai moyen</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contactez-nous</h2>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Demandez votre devis gratuit</h3>
+                    <p>Vous avez un projet en tête ? Décrivez-nous votre idée et recevez un devis personnalisé sous 24h.</p>
+                    <div class="contact-details">
+                        <div class="detail">
+                            <i class="fas fa-envelope"></i>
+                            <span>contact@creaforge3d.fr</span>
+                        </div>
+                        <div class="detail">
+                            <i class="fas fa-phone"></i>
+                            <span>+33 1 23 45 67 89</span>
+                        </div>
+                        <div class="detail">
+                            <i class="fas fa-clock"></i>
+                            <span>Lun-Ven: 9h-18h</span>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" id="name" name="name" placeholder="Votre nom" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" placeholder="Votre email" required>
+                    </div>
+                    <div class="form-group">
+                        <select id="service" name="service" required>
+                            <option value="">Type de projet</option>
+                            <option value="personnalise">Objet personnalisé</option>
+                            <option value="prototypage">Prototypage</option>
+                            <option value="production">Production en série</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" name="message" placeholder="Décrivez votre projet..." rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CréaForge<span class="logo-3d">3D</span></h3>
+                    <p>Votre partenaire de confiance pour tous vos projets d'impression 3D personnalisés.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#produits">Objets personnalisés</a></li>
+                        <li><a href="#produits">Prototypage</a></li>
+                        <li><a href="#produits">Production série</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>contact@creaforge3d.fr</li>
+                        <li>+33 1 23 45 67 89</li>
+                        <li>Lun-Ven: 9h-18h</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 CréaForge3D. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
