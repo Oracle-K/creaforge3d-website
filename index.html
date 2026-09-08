@@ -19,7 +19,10 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item"><a href="#accueil" class="nav-link">Accueil</a></li>
+                <li class="nav-item"><a href="#app-visual" class="nav-link">Visuel App</a></li>
+                <li class="nav-item"><a href="#app-base" class="nav-link">Base Appli</a></li>
                 <li class="nav-item"><a href="#produits" class="nav-link">Produits</a></li>
+                <li class="nav-item"><a href="#duels" class="nav-link">Course 1v1</a></li>
                 <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
                 <li class="nav-item"><a href="#about" class="nav-link">À Propos</a></li>
                 <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
@@ -47,6 +50,206 @@
                 <div class="printer-animation">
                     <i class="fas fa-cube"></i>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Visual Section -->
+    <section id="app-visual" class="app-visual">
+        <div class="container">
+            <h2 class="section-title">Visuel de l'application mobile</h2>
+            <p class="app-visual-intro">Prototype visuel pour présenter l'expérience joueur de bout en bout.</p>
+            <div class="app-visual-actions">
+                <button class="btn btn-primary" id="runVisualDemoBtn">Lancer une démo guidée</button>
+                <button class="btn btn-secondary app-visual-reset-btn" id="resetVisualDemoBtn">Réinitialiser la démo</button>
+            </div>
+            <div class="app-visual-tabs">
+                <button class="visual-tab-btn active" data-visual-screen="home">Accueil</button>
+                <button class="visual-tab-btn" data-visual-screen="capture">Capture</button>
+                <button class="visual-tab-btn" data-visual-screen="garage">Garage</button>
+                <button class="visual-tab-btn" data-visual-screen="duel">Duel</button>
+                <button class="visual-tab-btn" data-visual-screen="history">Historique</button>
+            </div>
+
+            <div class="mobile-preview-shell">
+                <div class="phone-notch"></div>
+                <div class="mobile-preview-screen visual-screen active" data-screen="home">
+                    <div class="mobile-screen-header">
+                        <div class="mobile-avatar">JK</div>
+                        <div>
+                            <h3>Salut, Joueur 1 👋</h3>
+                            <p>Niveau <strong id="visualLevel">1</strong> · <span id="visualXp">0 XP</span></p>
+                        </div>
+                    </div>
+                    <div class="mobile-kpi-grid">
+                        <article><span>Points</span><strong id="visualPoints">0</strong></article>
+                        <article><span>Captures</span><strong id="visualCaptures">0</strong></article>
+                        <article><span>Rareté max</span><strong id="visualTopRarity">Aucune</strong></article>
+                        <article><span>Série</span><strong id="visualStreak">0</strong></article>
+                    </div>
+                    <div class="mobile-placeholder-list">
+                        <div class="car-placeholder-card">
+                            <i class="fas fa-car-side"></i>
+                            <div>
+                                <strong>Mission du jour</strong>
+                                <p>Trouver une voiture épique ou légendaire</p>
+                            </div>
+                        </div>
+                        <div class="car-placeholder-card">
+                            <i class="fas fa-bullseye"></i>
+                            <div>
+                                <strong>Objectif actif</strong>
+                                <p>3 captures valides pour bonus +50</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="capture">
+                    <h3>Écran Capture</h3>
+                    <p class="screen-subtitle">Exemple de validation en direct</p>
+                    <div class="capture-photo-preview">
+                        <i class="fas fa-camera-retro"></i>
+                        <p>Aperçu photo en direct</p>
+                    </div>
+                    <div class="rarity-chip-row">
+                        <span class="rarity-chip rarity-common">Commun</span>
+                        <span class="rarity-chip rarity-rare">Rare</span>
+                        <span class="rarity-chip rarity-epic">Épique</span>
+                        <span class="rarity-chip rarity-legendary">Légendaire</span>
+                    </div>
+                    <ul class="app-checklist">
+                        <li class="done">✅ Photo live</li>
+                        <li class="done">✅ Géolocalisation</li>
+                        <li class="done">✅ Horodatage</li>
+                    </ul>
+                    <p id="visualLastCapture">Aucune capture simulée.</p>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="garage">
+                    <h3>Écran Garage</h3>
+                    <p class="screen-subtitle">Collection avec états visuels</p>
+                    <div class="garage-mini-list" id="visualGarageList">
+                        <p class="garage-empty-state">Aucune voiture collectée pour l’instant.</p>
+                    </div>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="duel">
+                    <h3>Écran Duel 1v1</h3>
+                    <p class="screen-subtitle">Score live entre 2 joueurs</p>
+                    <div class="duel-mini-card">
+                        <div><span>Joueur 1</span><strong id="visualDuelP1">0</strong></div>
+                        <div><span>Joueur 2</span><strong id="visualDuelP2">0</strong></div>
+                    </div>
+                    <p id="visualDuelStatus">Défi non démarré.</p>
+                    <div class="duel-mini-progress">
+                        <div id="visualDuelBar"></div>
+                    </div>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="history">
+                    <h3>Écran Historique</h3>
+                    <p class="screen-subtitle">Résultats récents et badges</p>
+                    <ul class="visual-history-list" id="visualHistoryList">
+                        <li>Aucun événement de démo pour le moment.</li>
+                    </ul>
+                </div>
+                <div class="mobile-bottom-nav">
+                    <button class="visual-tab-btn active" data-visual-screen="home"><i class="fas fa-house"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="capture"><i class="fas fa-camera"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="garage"><i class="fas fa-warehouse"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="duel"><i class="fas fa-flag-checkered"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="history"><i class="fas fa-clock-rotate-left"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Base Section -->
+    <section id="app-base" class="app-base">
+        <div class="container">
+            <h2 class="section-title">Base de l'application capture de voitures</h2>
+            <p class="app-base-intro">Prenez une photo d'une voiture, validez la capture, gagnez des points selon la rareté et construisez votre garage.</p>
+            <div class="app-base-grid">
+                <article class="app-base-card">
+                    <h3>Nouvelle capture</h3>
+                    <form id="carCaptureForm" class="app-capture-form">
+                        <div class="form-group">
+                            <label for="capturePlayer">Joueur</label>
+                            <input type="text" id="capturePlayer" value="Joueur 1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carBrand">Marque</label>
+                            <input type="text" id="carBrand" placeholder="Ex: Ferrari" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carModel">Modèle</label>
+                            <input type="text" id="carModel" placeholder="Ex: F40" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="captureRarity">Rareté</label>
+                            <select id="captureRarity">
+                                <option value="common">Commun</option>
+                                <option value="rare">Rare</option>
+                                <option value="epic">Épique</option>
+                                <option value="legendary">Légendaire</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="captureQuality">Qualité photo</label>
+                            <select id="captureQuality">
+                                <option value="1">1/5</option>
+                                <option value="2">2/5</option>
+                                <option value="3" selected>3/5</option>
+                                <option value="4">4/5</option>
+                                <option value="5">5/5</option>
+                            </select>
+                        </div>
+                        <div class="app-checks">
+                            <label><input type="checkbox" id="capturePhotoLive" checked> Photo prise en direct</label>
+                            <label><input type="checkbox" id="captureGpsOk" checked> Géolocalisation valide</label>
+                            <label><input type="checkbox" id="captureTimeOk" checked> Horodatage valide</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Valider la capture</button>
+                    </form>
+                    <p class="app-note">Anti-triche: les captures non conformes sont refusées et les doublons sont limités.</p>
+                    <button type="button" class="btn btn-small app-seed-btn" id="seedGarageBtn">Charger des données de démo</button>
+                </article>
+
+                <article class="app-base-card">
+                    <h3>Garage & progression</h3>
+                    <div class="app-stats-grid">
+                        <div class="app-stat"><span>Points</span><strong id="baseTotalPoints">0</strong></div>
+                        <div class="app-stat"><span>Captures</span><strong id="baseTotalCaptures">0</strong></div>
+                        <div class="app-stat"><span>Voitures uniques</span><strong id="baseUniqueCars">0</strong></div>
+                        <div class="app-stat"><span>Légendaires</span><strong id="baseLegendaryCount">0</strong></div>
+                    </div>
+
+                    <div class="app-progression">
+                        <h4>Collection par rareté</h4>
+                        <ul>
+                            <li>Commun: <strong id="baseCommonCount">0</strong></li>
+                            <li>Rare: <strong id="baseRareCount">0</strong></li>
+                            <li>Épique: <strong id="baseEpicCount">0</strong></li>
+                            <li>Légendaire: <strong id="baseLegendaryRarityCount">0</strong></li>
+                        </ul>
+                        <p id="baseBadge">Badge actuel: Débutant</p>
+                    </div>
+
+                    <div class="app-garage-controls">
+                        <label for="garageFilter">Filtrer le garage</label>
+                        <select id="garageFilter">
+                            <option value="all">Toutes raretés</option>
+                            <option value="common">Commun</option>
+                            <option value="rare">Rare</option>
+                            <option value="epic">Épique</option>
+                            <option value="legendary">Légendaire</option>
+                        </select>
+                    </div>
+                    <ul id="garageList" class="garage-list">
+                        <li>Aucune capture pour le moment.</li>
+                    </ul>
+                </article>
             </div>
         </div>
     </section>
@@ -165,6 +368,126 @@
                         <button class="btn btn-small">Commander</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Duels Section -->
+    <section id="duels" class="duels">
+        <div class="container">
+            <h2 class="section-title">Mode Course 1v1</h2>
+            <p class="duels-intro">Lancez un duel entre 2 joueurs avec score en direct, règles anti-triche et historique des courses.</p>
+
+            <div class="duel-challenge-card">
+                <h3>Défi direct</h3>
+                <div class="duel-challenge-form">
+                    <input type="text" id="challengerName" placeholder="Joueur 1 (challenger)" value="Joueur 1">
+                    <input type="text" id="opponentName" placeholder="Joueur 2 (adversaire)" value="Joueur 2">
+                    <button class="btn btn-small" id="sendChallengeBtn">Envoyer le défi</button>
+                    <button class="btn btn-small btn-secondary-duel" id="acceptChallengeBtn">Accepter</button>
+                    <button class="btn btn-small btn-danger-duel" id="refuseChallengeBtn">Refuser</button>
+                </div>
+                <p class="duel-status" id="duelStatus">Statut: en attente d'un défi.</p>
+            </div>
+
+            <div class="duel-config">
+                <h3>Type de course</h3>
+                <div class="duel-config-grid">
+                    <div class="form-group">
+                        <label for="raceType">Mode</label>
+                        <select id="raceType">
+                            <option value="time">Temps limité</option>
+                            <option value="score">Objectif score</option>
+                            <option value="hunt">Chasse ciblée</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="raceDuration">Durée (minutes)</label>
+                        <input type="number" id="raceDuration" min="1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="scoreTarget">Score cible</label>
+                        <input type="number" id="scoreTarget" min="50" value="500">
+                    </div>
+                    <div class="form-group">
+                        <label for="huntTargets">Voitures à trouver (séparées par virgule)</label>
+                        <input type="text" id="huntTargets" value="ferrari, porsche, lamborghini">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="startRaceBtn" disabled>Démarrer la course</button>
+                <button class="btn btn-danger-duel" id="stopRaceBtn" disabled>Terminer la course</button>
+            </div>
+
+            <div class="duel-live-board">
+                <div class="duel-header">
+                    <h3>Course en direct</h3>
+                    <div class="duel-timer" id="duelTimer">10:00</div>
+                </div>
+                <div class="duel-players-grid">
+                    <article class="duel-player-card" data-player="0">
+                        <h4 id="playerOneTitle">Joueur 1</h4>
+                        <p class="duel-score">Score: <strong id="player1Score">0</strong></p>
+                        <p>Captures: <span id="player1Captures">0</span></p>
+                        <p>Meilleure rareté: <span id="player1BestRarity">Aucune</span></p>
+                        <div class="duel-capture-controls">
+                            <select id="player1Rarity">
+                                <option value="common">Commun</option>
+                                <option value="rare">Rare</option>
+                                <option value="epic">Épique</option>
+                                <option value="legendary">Légendaire</option>
+                            </select>
+                            <select id="player1Quality">
+                                <option value="1">Qualité 1/5</option>
+                                <option value="2">Qualité 2/5</option>
+                                <option value="3" selected>Qualité 3/5</option>
+                                <option value="4">Qualité 4/5</option>
+                                <option value="5">Qualité 5/5</option>
+                            </select>
+                            <input type="text" id="player1Model" placeholder="Modèle capturé (optionnel)">
+                            <label><input type="checkbox" id="player1FirstCaptureBonus"> Bonus 1ère capture</label>
+                            <label><input type="checkbox" id="player1PhotoLive" checked> Photo prise pendant la course</label>
+                            <label><input type="checkbox" id="player1GpsOk" checked> Géolocalisation validée</label>
+                            <label><input type="checkbox" id="player1TimeOk" checked> Horodatage validé</label>
+                            <button class="btn btn-small duel-capture-btn" id="player1CaptureBtn">Ajouter capture</button>
+                        </div>
+                    </article>
+                    <article class="duel-player-card" data-player="1">
+                        <h4 id="playerTwoTitle">Joueur 2</h4>
+                        <p class="duel-score">Score: <strong id="player2Score">0</strong></p>
+                        <p>Captures: <span id="player2Captures">0</span></p>
+                        <p>Meilleure rareté: <span id="player2BestRarity">Aucune</span></p>
+                        <div class="duel-capture-controls">
+                            <select id="player2Rarity">
+                                <option value="common">Commun</option>
+                                <option value="rare">Rare</option>
+                                <option value="epic">Épique</option>
+                                <option value="legendary">Légendaire</option>
+                            </select>
+                            <select id="player2Quality">
+                                <option value="1">Qualité 1/5</option>
+                                <option value="2">Qualité 2/5</option>
+                                <option value="3" selected>Qualité 3/5</option>
+                                <option value="4">Qualité 4/5</option>
+                                <option value="5">Qualité 5/5</option>
+                            </select>
+                            <input type="text" id="player2Model" placeholder="Modèle capturé (optionnel)">
+                            <label><input type="checkbox" id="player2FirstCaptureBonus"> Bonus 1ère capture</label>
+                            <label><input type="checkbox" id="player2PhotoLive" checked> Photo prise pendant la course</label>
+                            <label><input type="checkbox" id="player2GpsOk" checked> Géolocalisation validée</label>
+                            <label><input type="checkbox" id="player2TimeOk" checked> Horodatage validé</label>
+                            <button class="btn btn-small duel-capture-btn" id="player2CaptureBtn">Ajouter capture</button>
+                        </div>
+                    </article>
+                </div>
+                <p class="duel-winner" id="duelWinner">Aucune course active.</p>
+            </div>
+
+            <div class="duel-history">
+                <h3>Historique & Classement</h3>
+                <div class="duel-leaderboard" id="duelLeaderboard"></div>
+                <ul id="duelHistoryList">
+                    <li>Aucune course enregistrée.</li>
+                </ul>
             </div>
         </div>
     </section>

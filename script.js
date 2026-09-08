@@ -113,12 +113,18 @@ contactForm.addEventListener('submit', (e) => {
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span>${message}</span>
-            <button class="notification-close">&times;</button>
-        </div>
-    `;
+    const notificationContent = document.createElement('div');
+    notificationContent.className = 'notification-content';
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    const closeButton = document.createElement('button');
+    closeButton.className = 'notification-close';
+    closeButton.type = 'button';
+    closeButton.setAttribute('aria-label', 'Fermer la notification');
+    closeButton.textContent = '×';
+    notificationContent.appendChild(messageSpan);
+    notificationContent.appendChild(closeButton);
+    notification.appendChild(notificationContent);
     
     // Styles pour la notification
     notification.style.cssText = `
@@ -231,4 +237,758 @@ document.addEventListener('DOMContentLoaded', () => {
     if (aboutSection) {
         statsObserver.observe(aboutSection);
     }
+});
+
+// Base application capture de voitures
+document.addEventListener('DOMContentLoaded', () => {
+    const appRoot = document.getElementById('app-base');
+    if (!appRoot) {
+        return;
+    }
+
+    const rarityPoints = {
+        common: 10,
+        rare: 25,
+        epic: 50,
+        legendary: 100
+    };
+
+    const rarityLabel = {
+        common: 'Commun',
+        rare: 'Rare',
+        epic: 'Épique',
+        legendary: 'Légendaire'
+    };
+
+    const garageStorageKey = 'creaforge3d_garage_v1';
+    let captures = JSON.parse(localStorage.getItem(garageStorageKey) || '[]');
+    if (!Array.isArray(captures)) {
+        captures = [];
+    }
+
+    const el = {
+        form: document.getElementById('carCaptureForm'),
+        player: document.getElementById('capturePlayer'),
+        brand: document.getElementById('carBrand'),
+        model: document.getElementById('carModel'),
+        rarity: document.getElementById('captureRarity'),
+        quality: document.getElementById('captureQuality'),
+        photoLive: document.getElementById('capturePhotoLive'),
+        gpsOk: document.getElementById('captureGpsOk'),
+        timeOk: document.getElementById('captureTimeOk'),
+        seedButton: document.getElementById('seedGarageBtn'),
+        filter: document.getElementById('garageFilter'),
+        garageList: document.getElementById('garageList'),
+        totalPoints: document.getElementById('baseTotalPoints'),
+        totalCaptures: document.getElementById('baseTotalCaptures'),
+        uniqueCars: document.getElementById('baseUniqueCars'),
+        legendaryCount: document.getElementById('baseLegendaryCount'),
+        commonCount: document.getElementById('baseCommonCount'),
+        rareCount: document.getElementById('baseRareCount'),
+        epicCount: document.getElementById('baseEpicCount'),
+        legendaryRarityCount: document.getElementById('baseLegendaryRarityCount'),
+        badge: document.getElementById('baseBadge')
+    };
+
+    function normalizeText(value) {
+        return value.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function saveGarage() {
+        localStorage.setItem(garageStorageKey, JSON.stringify(captures));
+    }
+
+    function getBadge(totalPoints, legendaryCount) {
+        if (legendaryCount >= 5 || totalPoints >= 3000) {
+            return 'Chasseur légendaire';
+        }
+        if (totalPoints >= 1500) {
+            return 'Pilote Élite';
+        }
+        if (totalPoints >= 700) {
+            return 'Collectionneur Expert';
+        }
+        if (totalPoints >= 250) {
+            return 'Collectionneur';
+        }
+        return 'Débutant';
+    }
+
+    function renderGarage() {
+        const activeFilter = el.filter.value;
+        const filtered = activeFilter === 'all'
+            ? captures
+            : captures.filter((capture) => capture.rarity === activeFilter);
+
+        if (!filtered.length) {
+            el.garageList.innerHTML = '<li>Aucune capture pour le moment.</li>';
+        } else {
+            el.garageList.innerHTML = filtered.slice(0, 20).map((capture) => (
+                `<li><strong>${capture.brand} ${capture.model}</strong> · ${rarityLabel[capture.rarity]} · Qualité ${capture.quality}/5 · +${capture.points} pts · ${capture.player} · ${new Date(capture.date).toLocaleString('fr-FR')}</li>`
+            )).join('');
+        }
+
+        const totalPoints = captures.reduce((sum, capture) => sum + capture.points, 0);
+        const uniqueModels = new Set(captures.map((capture) => capture.modelKey)).size;
+        const countByRarity = {
+            common: captures.filter((capture) => capture.rarity === 'common').length,
+            rare: captures.filter((capture) => capture.rarity === 'rare').length,
+            epic: captures.filter((capture) => capture.rarity === 'epic').length,
+            legendary: captures.filter((capture) => capture.rarity === 'legendary').length
+        };
+
+        el.totalPoints.textContent = totalPoints;
+        el.totalCaptures.textContent = captures.length;
+        el.uniqueCars.textContent = uniqueModels;
+        el.legendaryCount.textContent = countByRarity.legendary;
+        el.commonCount.textContent = countByRarity.common;
+        el.rareCount.textContent = countByRarity.rare;
+        el.epicCount.textContent = countByRarity.epic;
+        el.legendaryRarityCount.textContent = countByRarity.legendary;
+        el.badge.textContent = `Badge actuel: ${getBadge(totalPoints, countByRarity.legendary)}`;
+    }
+
+    function isCaptureValid() {
+        return el.photoLive.checked && el.gpsOk.checked && el.timeOk.checked;
+    }
+
+    function seedDemoCaptures() {
+        const demoCars = [
+            { player: 'Démo', brand: 'Ferrari', model: 'F40', rarity: 'legendary', quality: 5 },
+            { player: 'Démo', brand: 'Porsche', model: '911 Turbo S', rarity: 'epic', quality: 4 },
+            { player: 'Démo', brand: 'Toyota', model: 'Supra MK4', rarity: 'rare', quality: 4 }
+        ];
+
+        const existing = new Set(captures.map((capture) => capture.modelKey));
+        let added = 0;
+
+        demoCars.forEach((car) => {
+            const modelKey = normalizeText(`${car.brand} ${car.model}`);
+            if (existing.has(modelKey)) {
+                return;
+            }
+
+            const qualityMultiplier = 0.8 + (car.quality * 0.1);
+            const points = Math.round((rarityPoints[car.rarity] * qualityMultiplier) + 20);
+            captures.unshift({
+                ...car,
+                points,
+                date: new Date().toISOString(),
+                modelKey
+            });
+            existing.add(modelKey);
+            added += 1;
+        });
+
+        if (!added) {
+            showNotification('Les données de démo sont déjà chargées.', 'info');
+            return;
+        }
+
+        saveGarage();
+        renderGarage();
+        showNotification(`${added} voiture(s) de démo ajoutée(s) au garage.`, 'success');
+    }
+
+    el.form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!isCaptureValid()) {
+            showNotification('Capture refusée: photo live, géolocalisation et horodatage sont requis.', 'info');
+            return;
+        }
+
+        const player = el.player.value.trim() || 'Joueur';
+        const brand = el.brand.value.trim();
+        const model = el.model.value.trim();
+
+        if (!brand || !model) {
+            showNotification('Marque et modèle sont obligatoires.', 'info');
+            return;
+        }
+
+        const rarity = el.rarity.value;
+        const quality = Number(el.quality.value);
+        const modelKey = normalizeText(`${brand} ${model}`);
+        const duplicateCount = captures.filter((capture) => capture.modelKey === modelKey).length;
+
+        if (duplicateCount >= 3) {
+            showNotification('Limite de doublons atteinte pour ce modèle (max 3 captures).', 'info');
+            return;
+        }
+
+        const firstDiscovery = duplicateCount === 0;
+        const qualityMultiplier = 0.8 + (quality * 0.1);
+        const duplicateMultiplier = duplicateCount > 0 ? 0.6 : 1;
+        const firstDiscoveryBonus = firstDiscovery ? 20 : 0;
+        const points = Math.round((rarityPoints[rarity] * qualityMultiplier * duplicateMultiplier) + firstDiscoveryBonus);
+
+        captures.unshift({
+            player,
+            brand,
+            model,
+            rarity,
+            quality,
+            points,
+            date: new Date().toISOString(),
+            modelKey
+        });
+
+        saveGarage();
+        renderGarage();
+        el.brand.value = '';
+        el.model.value = '';
+        showNotification(`Capture validée: ${brand} ${model} (+${points} pts).`, 'success');
+    });
+
+    el.filter.addEventListener('change', renderGarage);
+    if (el.seedButton) {
+        el.seedButton.addEventListener('click', seedDemoCaptures);
+    }
+    renderGarage();
+});
+
+// Prévisualisation mobile de l'application
+document.addEventListener('DOMContentLoaded', () => {
+    const visualRoot = document.getElementById('app-visual');
+    if (!visualRoot) {
+        return;
+    }
+
+    const rarityRank = { Aucune: 0, Commun: 1, Rare: 2, Épique: 3, Légendaire: 4 };
+    const visualState = {
+        points: 0,
+        captures: 0,
+        topRarity: 'Aucune',
+        streak: 0,
+        xp: 0,
+        level: 1,
+        garage: [],
+        duelP1: 0,
+        duelP2: 0,
+        duelStatus: 'Défi non démarré.',
+        history: []
+    };
+
+    const visualEl = {
+        tabButtons: document.querySelectorAll('.visual-tab-btn'),
+        screens: document.querySelectorAll('.visual-screen'),
+        runDemoBtn: document.getElementById('runVisualDemoBtn'),
+        resetDemoBtn: document.getElementById('resetVisualDemoBtn'),
+        points: document.getElementById('visualPoints'),
+        captures: document.getElementById('visualCaptures'),
+        topRarity: document.getElementById('visualTopRarity'),
+        streak: document.getElementById('visualStreak'),
+        xp: document.getElementById('visualXp'),
+        level: document.getElementById('visualLevel'),
+        lastCapture: document.getElementById('visualLastCapture'),
+        garageList: document.getElementById('visualGarageList'),
+        duelP1: document.getElementById('visualDuelP1'),
+        duelP2: document.getElementById('visualDuelP2'),
+        duelStatus: document.getElementById('visualDuelStatus'),
+        duelBar: document.getElementById('visualDuelBar'),
+        historyList: document.getElementById('visualHistoryList')
+    };
+
+    function setVisualScreen(screenName) {
+        visualEl.screens.forEach((screen) => {
+            screen.classList.toggle('active', screen.dataset.screen === screenName);
+        });
+        visualEl.tabButtons.forEach((btn) => {
+            btn.classList.toggle('active', btn.dataset.visualScreen === screenName);
+        });
+    }
+
+    function setTopRarity(label) {
+        if (rarityRank[label] > rarityRank[visualState.topRarity]) {
+            visualState.topRarity = label;
+        }
+    }
+
+    function renderVisualGarage() {
+        if (!visualState.garage.length) {
+            visualEl.garageList.innerHTML = '<p class="garage-empty-state">Aucune voiture collectée pour l’instant.</p>';
+            return;
+        }
+        visualEl.garageList.innerHTML = visualState.garage.slice(0, 4).map((car) => (
+            `<div class="garage-mini-item"><strong>${car.brand} ${car.model}</strong><br><span class="rarity-chip rarity-${car.rarity}">${car.rarityLabel}</span> · +${car.points} pts</div>`
+        )).join('');
+    }
+
+    function renderVisualHistory() {
+        if (!visualState.history.length) {
+            visualEl.historyList.innerHTML = '<li>Aucun événement de démo pour le moment.</li>';
+            return;
+        }
+        visualEl.historyList.innerHTML = visualState.history.slice(-6).reverse().map((item) => `<li>${item}</li>`).join('');
+    }
+
+    function renderVisualState() {
+        visualEl.points.textContent = visualState.points;
+        visualEl.captures.textContent = visualState.captures;
+        visualEl.topRarity.textContent = visualState.topRarity;
+        visualEl.streak.textContent = visualState.streak;
+        visualEl.xp.textContent = `${visualState.xp} XP`;
+        visualEl.level.textContent = visualState.level;
+        visualEl.duelP1.textContent = visualState.duelP1;
+        visualEl.duelP2.textContent = visualState.duelP2;
+        visualEl.duelStatus.textContent = visualState.duelStatus;
+
+        const total = Math.max(visualState.duelP1 + visualState.duelP2, 1);
+        const p1Ratio = Math.max(5, Math.min(95, Math.round((visualState.duelP1 / total) * 100)));
+        visualEl.duelBar.style.width = `${p1Ratio}%`;
+
+        renderVisualGarage();
+        renderVisualHistory();
+    }
+
+    function addVisualCapture({ brand, model, rarity, rarityLabel, points }) {
+        visualState.points += points;
+        visualState.captures += 1;
+        visualState.xp += points;
+        visualState.level = Math.max(1, Math.floor(visualState.xp / 150) + 1);
+        visualState.streak += 1;
+        setTopRarity(rarityLabel);
+        visualState.garage.unshift({ brand, model, rarity, rarityLabel, points });
+        visualEl.lastCapture.textContent = `Dernière capture: ${brand} ${model} (${rarityLabel}) +${points} pts`;
+        visualState.history.push(`Capture validée: ${brand} ${model} (+${points} pts).`);
+        renderVisualState();
+    }
+
+    function runGuidedDemo() {
+        visualState.points = 0;
+        visualState.captures = 0;
+        visualState.topRarity = 'Aucune';
+        visualState.streak = 0;
+        visualState.xp = 0;
+        visualState.level = 1;
+        visualState.garage = [];
+        visualState.duelP1 = 0;
+        visualState.duelP2 = 0;
+        visualState.duelStatus = 'Défi envoyé...';
+        visualState.history = ['Démo lancée: parcours Capture → Garage → Duel.'];
+        renderVisualState();
+        setVisualScreen('capture');
+
+        setTimeout(() => addVisualCapture({
+            brand: 'Ferrari',
+            model: 'F40',
+            rarity: 'legendary',
+            rarityLabel: 'Légendaire',
+            points: 140
+        }), 500);
+        setTimeout(() => addVisualCapture({
+            brand: 'Porsche',
+            model: '911 GT3',
+            rarity: 'epic',
+            rarityLabel: 'Épique',
+            points: 78
+        }), 1100);
+        setTimeout(() => {
+            setVisualScreen('garage');
+            visualState.history.push('Garage mis à jour avec les nouvelles captures.');
+            renderVisualState();
+        }, 1700);
+        setTimeout(() => {
+            setVisualScreen('duel');
+            visualState.duelP1 = 220;
+            visualState.duelP2 = 185;
+            visualState.duelStatus = 'Course active: Joueur 1 en tête.';
+            visualState.history.push('Duel 1v1 démarré avec score en direct.');
+            renderVisualState();
+        }, 2300);
+        setTimeout(() => {
+            visualState.duelP1 = 310;
+            visualState.duelP2 = 290;
+            visualState.duelStatus = 'Victoire Joueur 1, badge: Chasseur Légendaire.';
+            visualState.history.push('Résultat duel: victoire Joueur 1 et badge débloqué.');
+            setVisualScreen('history');
+            renderVisualState();
+            showNotification('Démo guidée terminée : parcours complet affiché.', 'success');
+        }, 3000);
+    }
+
+    function resetVisualDemo() {
+        visualState.points = 0;
+        visualState.captures = 0;
+        visualState.topRarity = 'Aucune';
+        visualState.streak = 0;
+        visualState.xp = 0;
+        visualState.level = 1;
+        visualState.garage = [];
+        visualState.duelP1 = 0;
+        visualState.duelP2 = 0;
+        visualState.duelStatus = 'Défi non démarré.';
+        visualState.history = [];
+        visualEl.lastCapture.textContent = 'Aucune capture simulée.';
+        setVisualScreen('home');
+        renderVisualState();
+    }
+
+    visualEl.tabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            setVisualScreen(button.dataset.visualScreen);
+        });
+    });
+
+    visualEl.runDemoBtn.addEventListener('click', runGuidedDemo);
+    visualEl.resetDemoBtn.addEventListener('click', resetVisualDemo);
+
+    resetVisualDemo();
+});
+
+// Mode course 1v1
+document.addEventListener('DOMContentLoaded', () => {
+    const duelRoot = document.getElementById('duels');
+    if (!duelRoot) {
+        return;
+    }
+
+    const rarityPoints = {
+        common: 10,
+        rare: 25,
+        epic: 50,
+        legendary: 100
+    };
+
+    const rarityLabels = {
+        common: 'Commun',
+        rare: 'Rare',
+        epic: 'Épique',
+        legendary: 'Légendaire'
+    };
+
+    const rarityRank = {
+        common: 1,
+        rare: 2,
+        epic: 3,
+        legendary: 4
+    };
+
+    const state = {
+        challengeAccepted: false,
+        raceActive: false,
+        mode: 'time',
+        timeLeft: 600,
+        timer: null,
+        huntTargets: [],
+        players: [
+            { name: 'Joueur 1', score: 0, captures: 0, bestRarity: 'common', foundTargets: new Set() },
+            { name: 'Joueur 2', score: 0, captures: 0, bestRarity: 'common', foundTargets: new Set() }
+        ]
+    };
+
+    const historyKey = 'creaforge3d_duel_history';
+    const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+
+    const el = {
+        challengerName: document.getElementById('challengerName'),
+        opponentName: document.getElementById('opponentName'),
+        sendChallengeBtn: document.getElementById('sendChallengeBtn'),
+        acceptChallengeBtn: document.getElementById('acceptChallengeBtn'),
+        refuseChallengeBtn: document.getElementById('refuseChallengeBtn'),
+        duelStatus: document.getElementById('duelStatus'),
+        raceType: document.getElementById('raceType'),
+        raceDuration: document.getElementById('raceDuration'),
+        scoreTarget: document.getElementById('scoreTarget'),
+        huntTargets: document.getElementById('huntTargets'),
+        startRaceBtn: document.getElementById('startRaceBtn'),
+        stopRaceBtn: document.getElementById('stopRaceBtn'),
+        timer: document.getElementById('duelTimer'),
+        winner: document.getElementById('duelWinner'),
+        p1Title: document.getElementById('playerOneTitle'),
+        p2Title: document.getElementById('playerTwoTitle'),
+        p1Score: document.getElementById('player1Score'),
+        p2Score: document.getElementById('player2Score'),
+        p1Captures: document.getElementById('player1Captures'),
+        p2Captures: document.getElementById('player2Captures'),
+        p1BestRarity: document.getElementById('player1BestRarity'),
+        p2BestRarity: document.getElementById('player2BestRarity'),
+        p1Rarity: document.getElementById('player1Rarity'),
+        p2Rarity: document.getElementById('player2Rarity'),
+        p1Quality: document.getElementById('player1Quality'),
+        p2Quality: document.getElementById('player2Quality'),
+        p1Model: document.getElementById('player1Model'),
+        p2Model: document.getElementById('player2Model'),
+        p1Bonus: document.getElementById('player1FirstCaptureBonus'),
+        p2Bonus: document.getElementById('player2FirstCaptureBonus'),
+        p1PhotoLive: document.getElementById('player1PhotoLive'),
+        p2PhotoLive: document.getElementById('player2PhotoLive'),
+        p1GpsOk: document.getElementById('player1GpsOk'),
+        p2GpsOk: document.getElementById('player2GpsOk'),
+        p1TimeOk: document.getElementById('player1TimeOk'),
+        p2TimeOk: document.getElementById('player2TimeOk'),
+        p1CaptureBtn: document.getElementById('player1CaptureBtn'),
+        p2CaptureBtn: document.getElementById('player2CaptureBtn'),
+        leaderboard: document.getElementById('duelLeaderboard'),
+        historyList: document.getElementById('duelHistoryList')
+    };
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
+
+    function updateBoard() {
+        el.p1Title.textContent = state.players[0].name;
+        el.p2Title.textContent = state.players[1].name;
+        el.p1Score.textContent = state.players[0].score;
+        el.p2Score.textContent = state.players[1].score;
+        el.p1Captures.textContent = state.players[0].captures;
+        el.p2Captures.textContent = state.players[1].captures;
+        el.p1BestRarity.textContent = state.players[0].captures ? rarityLabels[state.players[0].bestRarity] : 'Aucune';
+        el.p2BestRarity.textContent = state.players[1].captures ? rarityLabels[state.players[1].bestRarity] : 'Aucune';
+        el.timer.textContent = formatTime(state.timeLeft);
+    }
+
+    function saveHistory() {
+        localStorage.setItem(historyKey, JSON.stringify(history));
+    }
+
+    function renderHistoryAndLeaderboard() {
+        if (!history.length) {
+            el.historyList.innerHTML = '<li>Aucune course enregistrée.</li>';
+            el.leaderboard.innerHTML = '';
+            return;
+        }
+
+        const sorted = [...history].sort((a, b) => new Date(b.date) - new Date(a.date));
+        el.historyList.innerHTML = sorted.slice(0, 10).map((item) => (
+            `<li><strong>${item.winner}</strong> a gagné (${item.mode}) contre ${item.loser} - ${item.score1} / ${item.score2} · Badge: ${item.badge} · ${new Date(item.date).toLocaleString('fr-FR')}</li>`
+        )).join('');
+
+        const winTable = {};
+        history.forEach((race) => {
+            winTable[race.winner] = (winTable[race.winner] || 0) + 1;
+        });
+        const ranked = Object.entries(winTable).sort((a, b) => b[1] - a[1]);
+        el.leaderboard.innerHTML = ranked.map(([name, wins]) => (
+            `<span class="duel-leaderboard-item">${name}: ${wins} victoire${wins > 1 ? 's' : ''}</span>`
+        )).join('');
+    }
+
+    function setRaceButtons() {
+        el.startRaceBtn.disabled = !state.challengeAccepted || state.raceActive;
+        el.stopRaceBtn.disabled = !state.raceActive;
+    }
+
+    function resetRaceStats() {
+        state.players = state.players.map((player) => ({
+            ...player,
+            score: 0,
+            captures: 0,
+            bestRarity: 'common',
+            foundTargets: new Set()
+        }));
+        el.p1Bonus.checked = false;
+        el.p2Bonus.checked = false;
+        el.p1Model.value = '';
+        el.p2Model.value = '';
+    }
+
+    function getBadge(winner) {
+        if (state.mode === 'time') {
+            return 'Sprinteur';
+        }
+        if (state.mode === 'hunt') {
+            return 'Tracker';
+        }
+        if (rarityRank[winner.bestRarity] >= rarityRank.legendary) {
+            return 'Chasseur Légendaire';
+        }
+        return 'Dueliste';
+    }
+
+    function stopRace(reason = 'Course terminée.') {
+        if (!state.raceActive) {
+            return;
+        }
+
+        clearInterval(state.timer);
+        state.raceActive = false;
+        setRaceButtons();
+
+        const [p1, p2] = state.players;
+        let winner = null;
+        let loser = null;
+
+        if (p1.score > p2.score) {
+            winner = p1;
+            loser = p2;
+        } else if (p2.score > p1.score) {
+            winner = p2;
+            loser = p1;
+        } else if (rarityRank[p1.bestRarity] > rarityRank[p2.bestRarity]) {
+            winner = p1;
+            loser = p2;
+        } else if (rarityRank[p2.bestRarity] > rarityRank[p1.bestRarity]) {
+            winner = p2;
+            loser = p1;
+        } else {
+            el.winner.textContent = `${reason} Égalité parfaite entre ${p1.name} et ${p2.name}.`;
+            showNotification('Course terminée sur une égalité parfaite.', 'info');
+            updateBoard();
+            return;
+        }
+
+        const badge = getBadge(winner);
+        el.winner.textContent = `${reason} Vainqueur: ${winner.name} (${winner.score} pts).`;
+        history.push({
+            date: new Date().toISOString(),
+            mode: state.mode,
+            winner: winner.name,
+            loser: loser.name,
+            score1: p1.score,
+            score2: p2.score,
+            badge
+        });
+        saveHistory();
+        renderHistoryAndLeaderboard();
+        showNotification(`🏁 ${winner.name} remporte la course ! Badge: ${badge}`, 'success');
+        updateBoard();
+    }
+
+    function updateRaceByMode() {
+        state.mode = el.raceType.value;
+        if (state.mode === 'time') {
+            state.timeLeft = Number(el.raceDuration.value || 10) * 60;
+        }
+        if (state.mode === 'hunt') {
+            state.huntTargets = el.huntTargets.value
+                .split(',')
+                .map((item) => item.trim().toLowerCase())
+                .filter(Boolean);
+        }
+        updateBoard();
+    }
+
+    function startRace() {
+        if (!state.challengeAccepted) {
+            showNotification('Acceptez un défi avant de démarrer une course.', 'info');
+            return;
+        }
+        if (state.raceActive) {
+            return;
+        }
+
+        state.players[0].name = el.challengerName.value.trim() || 'Joueur 1';
+        state.players[1].name = el.opponentName.value.trim() || 'Joueur 2';
+        resetRaceStats();
+        updateRaceByMode();
+        state.raceActive = true;
+        setRaceButtons();
+        el.winner.textContent = 'Course active. Capturez des voitures pour marquer !';
+        showNotification('Course 1v1 démarrée !', 'success');
+
+        if (state.mode === 'time') {
+            state.timer = setInterval(() => {
+                state.timeLeft -= 1;
+                if (state.timeLeft <= 0) {
+                    state.timeLeft = 0;
+                    updateBoard();
+                    stopRace('Temps écoulé.');
+                    return;
+                }
+                updateBoard();
+            }, 1000);
+        }
+
+        updateBoard();
+    }
+
+    function antiCheatValid(playerIndex) {
+        const checks = playerIndex === 0
+            ? [el.p1PhotoLive.checked, el.p1GpsOk.checked, el.p1TimeOk.checked]
+            : [el.p2PhotoLive.checked, el.p2GpsOk.checked, el.p2TimeOk.checked];
+        return checks.every(Boolean);
+    }
+
+    function handleCapture(playerIndex) {
+        if (!state.raceActive) {
+            showNotification('Aucune course active.', 'info');
+            return;
+        }
+        if (!antiCheatValid(playerIndex)) {
+            showNotification('Capture refusée: vérifiez photo live, géolocalisation et horodatage.', 'info');
+            return;
+        }
+
+        const player = state.players[playerIndex];
+        const raritySelect = playerIndex === 0 ? el.p1Rarity : el.p2Rarity;
+        const qualitySelect = playerIndex === 0 ? el.p1Quality : el.p2Quality;
+        const modelInput = playerIndex === 0 ? el.p1Model : el.p2Model;
+        const bonusInput = playerIndex === 0 ? el.p1Bonus : el.p2Bonus;
+
+        const rarity = raritySelect.value;
+        const quality = Number(qualitySelect.value);
+        const model = modelInput.value.trim().toLowerCase();
+        const qualityMultiplier = 0.8 + (quality * 0.1);
+        const bonus = bonusInput.checked ? 30 : 0;
+        const points = Math.round((rarityPoints[rarity] * qualityMultiplier) + bonus);
+
+        player.score += points;
+        player.captures += 1;
+        if (rarityRank[rarity] > rarityRank[player.bestRarity]) {
+            player.bestRarity = rarity;
+        }
+        if (state.mode === 'hunt' && model && state.huntTargets.includes(model)) {
+            player.foundTargets.add(model);
+        }
+
+        bonusInput.checked = false;
+        modelInput.value = '';
+        updateBoard();
+
+        if (state.mode === 'score') {
+            const target = Number(el.scoreTarget.value || 500);
+            if (player.score >= target) {
+                stopRace(`Objectif score atteint (${target} pts).`);
+                return;
+            }
+        }
+
+        if (state.mode === 'hunt' && state.huntTargets.length) {
+            if (player.foundTargets.size === state.huntTargets.length) {
+                stopRace('Liste de chasse complétée.');
+            }
+        }
+    }
+
+    el.sendChallengeBtn.addEventListener('click', () => {
+        const player1 = el.challengerName.value.trim() || 'Joueur 1';
+        const player2 = el.opponentName.value.trim() || 'Joueur 2';
+        state.challengeAccepted = false;
+        setRaceButtons();
+        el.duelStatus.textContent = `Statut: ${player1} a défié ${player2}. En attente de réponse.`;
+        showNotification('Défi envoyé.', 'info');
+    });
+
+    el.acceptChallengeBtn.addEventListener('click', () => {
+        state.challengeAccepted = true;
+        setRaceButtons();
+        el.duelStatus.textContent = 'Statut: défi accepté. Vous pouvez démarrer la course.';
+        showNotification('Défi accepté.', 'success');
+    });
+
+    el.refuseChallengeBtn.addEventListener('click', () => {
+        state.challengeAccepted = false;
+        if (state.raceActive) {
+            stopRace('Course annulée.');
+        }
+        setRaceButtons();
+        el.duelStatus.textContent = 'Statut: défi refusé.';
+        showNotification('Défi refusé.', 'info');
+    });
+
+    el.startRaceBtn.addEventListener('click', startRace);
+    el.stopRaceBtn.addEventListener('click', () => stopRace('Course arrêtée manuellement.'));
+    el.raceType.addEventListener('change', updateRaceByMode);
+    el.p1CaptureBtn.addEventListener('click', () => handleCapture(0));
+    el.p2CaptureBtn.addEventListener('click', () => handleCapture(1));
+
+    updateRaceByMode();
+    updateBoard();
+    renderHistoryAndLeaderboard();
+    setRaceButtons();
 });

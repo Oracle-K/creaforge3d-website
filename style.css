@@ -555,3 +555,607 @@ section {
 .product-card.hidden {
     display: none;
 }
+
+/* App visual */
+.app-visual {
+    background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+}
+
+.app-visual-intro {
+    text-align: center;
+    max-width: 760px;
+    margin: -1.5rem auto 1.5rem;
+    color: #4b5563;
+}
+
+.app-visual-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.app-visual-reset-btn {
+    color: #1f2937;
+    border-color: #cbd5e1;
+}
+
+.app-visual-reset-btn:hover {
+    color: #111827;
+}
+
+.app-visual-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+}
+
+.visual-tab-btn {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #1f2937;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.visual-tab-btn.active,
+.visual-tab-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+.mobile-preview-shell {
+    max-width: 390px;
+    margin: 0 auto;
+    background: #0f172a;
+    border-radius: 34px;
+    padding: 0.7rem 0.65rem 0.8rem;
+    box-shadow: 0 20px 45px rgba(15, 23, 42, 0.35);
+}
+
+.phone-notch {
+    width: 130px;
+    height: 24px;
+    margin: 0 auto 0.55rem;
+    border-radius: 999px;
+    background: #111827;
+}
+
+.mobile-preview-screen {
+    display: none;
+    min-height: 430px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 1rem;
+}
+
+.mobile-preview-screen.active {
+    display: block;
+    animation: fadePhoneScreen 0.28s ease;
+}
+
+@keyframes fadePhoneScreen {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mobile-screen-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.mobile-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 999px;
+    background: linear-gradient(145deg, #2563eb, #7c3aed);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.mobile-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.mobile-kpi-grid article {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 0.65rem;
+}
+
+.mobile-kpi-grid span {
+    display: block;
+    color: #475569;
+    font-size: 0.84rem;
+}
+
+.mobile-kpi-grid strong {
+    color: #0f172a;
+    font-size: 1.1rem;
+}
+
+.mobile-placeholder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.car-placeholder-card {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.car-placeholder-card i {
+    color: #2563eb;
+    font-size: 1.2rem;
+}
+
+.screen-subtitle {
+    color: #64748b;
+    margin-bottom: 0.8rem;
+}
+
+.capture-photo-preview {
+    border: 2px dashed #93c5fd;
+    border-radius: 12px;
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #1d4ed8;
+    margin-bottom: 0.8rem;
+}
+
+.rarity-chip-row {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+}
+
+.rarity-chip {
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.rarity-common { background: #e2e8f0; color: #334155; }
+.rarity-rare { background: #dbeafe; color: #1d4ed8; }
+.rarity-epic { background: #ede9fe; color: #6d28d9; }
+.rarity-legendary { background: #fef3c7; color: #b45309; }
+
+.app-checklist {
+    list-style: none;
+    margin-bottom: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.app-checklist li {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 0.4rem 0.55rem;
+}
+
+.garage-mini-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.garage-mini-item {
+    border-radius: 10px;
+    padding: 0.6rem;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.garage-empty-state {
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 0.85rem;
+    text-align: center;
+    color: #64748b;
+}
+
+.duel-mini-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 0.7rem;
+}
+
+.duel-mini-card div {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 0.65rem;
+}
+
+.duel-mini-card span {
+    color: #475569;
+    display: block;
+}
+
+.duel-mini-card strong {
+    font-size: 1.3rem;
+    color: #0f172a;
+}
+
+.duel-mini-progress {
+    width: 100%;
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.duel-mini-progress > div {
+    height: 100%;
+    width: 50%;
+    background: linear-gradient(90deg, #2563eb 0%, #7c3aed 100%);
+    transition: width 0.4s ease;
+}
+
+.visual-history-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.visual-history-list li {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.65rem;
+}
+
+.mobile-bottom-nav {
+    margin-top: 0.6rem;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+
+.mobile-bottom-nav .visual-tab-btn {
+    border-radius: 12px;
+    padding: 0.5rem 0;
+}
+
+/* Base application */
+.app-base {
+    background: #f8fafc;
+}
+
+.app-base-intro {
+    text-align: center;
+    max-width: 760px;
+    margin: -1.5rem auto 2.5rem;
+    color: #4b5563;
+}
+
+.app-base-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.app-base-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.app-capture-form label,
+.app-garage-controls label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+}
+
+.app-capture-form input,
+.app-capture-form select,
+.app-garage-controls select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid #d1d5db;
+}
+
+.app-checks {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.app-checks label {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #374151;
+    font-weight: 500;
+}
+
+.app-note {
+    margin-top: 0.75rem;
+    color: #6b7280;
+    font-size: 0.92rem;
+}
+
+.app-seed-btn {
+    margin-top: 0.8rem;
+    background: #0ea5e9;
+    border-color: #0ea5e9;
+    color: #fff;
+}
+
+.app-seed-btn:hover {
+    background: #0284c7;
+}
+
+.app-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.app-stat {
+    background: #eff6ff;
+    border-radius: 10px;
+    padding: 0.85rem;
+}
+
+.app-stat span {
+    display: block;
+    color: #1e3a8a;
+}
+
+.app-stat strong {
+    font-size: 1.4rem;
+    color: #1d4ed8;
+}
+
+.app-progression {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.app-progression ul {
+    list-style: none;
+    margin: 0.7rem 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+}
+
+.garage-list {
+    list-style: none;
+    margin-top: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.garage-list li {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+/* Duels */
+.duels {
+    background: #eef2ff;
+}
+
+.duels-intro {
+    text-align: center;
+    max-width: 760px;
+    margin: -1.5rem auto 2.5rem;
+    color: #4b5563;
+}
+
+.duel-challenge-card,
+.duel-config,
+.duel-live-board,
+.duel-history {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.duel-challenge-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.duel-status {
+    color: #374151;
+    font-weight: 500;
+}
+
+.duel-config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.duel-config label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.45rem;
+}
+
+.duel-config .btn,
+.duel-challenge-form .btn {
+    width: 100%;
+}
+
+.duel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.duel-timer {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1d4ed8;
+}
+
+.duel-players-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.duel-player-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.duel-score {
+    color: #1f2937;
+    margin-bottom: 0.45rem;
+}
+
+.duel-capture-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 1rem;
+}
+
+.duel-capture-controls input[type="text"],
+.duel-capture-controls select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 2px solid #d1d5db;
+}
+
+.duel-capture-controls label {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    color: #374151;
+    font-size: 0.92rem;
+}
+
+.duel-capture-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+}
+
+.duel-capture-btn:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary-duel {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+}
+
+.btn-secondary-duel:hover {
+    background: #059669;
+}
+
+.btn-danger-duel {
+    background: #ef4444;
+    color: #ffffff;
+    border-color: #ef4444;
+}
+
+.btn-danger-duel:hover {
+    background: #dc2626;
+}
+
+.duel-winner {
+    margin-top: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.duel-leaderboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.duel-leaderboard-item {
+    background: #eff6ff;
+    color: #1e3a8a;
+    padding: 0.55rem 0.85rem;
+    border-radius: 999px;
+    font-weight: 600;
+}
+
+#duelHistoryList {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#duelHistoryList li {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .mobile-preview-shell {
+        max-width: 100%;
+    }
+
+    .app-base-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app-stats-grid,
+    .app-progression ul {
+        grid-template-columns: 1fr;
+    }
+
+    .duel-players-grid {
+        grid-template-columns: 1fr;
+    }
+}
