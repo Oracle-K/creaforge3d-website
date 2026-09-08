@@ -113,12 +113,18 @@ contactForm.addEventListener('submit', (e) => {
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
-    notification.innerHTML = `
-        <div class="notification-content">
-            <span>${message}</span>
-            <button class="notification-close">&times;</button>
-        </div>
-    `;
+    const notificationContent = document.createElement('div');
+    notificationContent.className = 'notification-content';
+    const messageSpan = document.createElement('span');
+    messageSpan.textContent = message;
+    const closeButton = document.createElement('button');
+    closeButton.className = 'notification-close';
+    closeButton.type = 'button';
+    closeButton.setAttribute('aria-label', 'Fermer la notification');
+    closeButton.textContent = '×';
+    notificationContent.appendChild(messageSpan);
+    notificationContent.appendChild(closeButton);
+    notification.appendChild(notificationContent);
     
     // Styles pour la notification
     notification.style.cssText = `
