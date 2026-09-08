@@ -233,6 +233,173 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Base application capture de voitures
+document.addEventListener('DOMContentLoaded', () => {
+    const appRoot = document.getElementById('app-base');
+    if (!appRoot) {
+        return;
+    }
+
+    const rarityPoints = {
+        common: 10,
+        rare: 25,
+        epic: 50,
+        legendary: 100
+    };
+
+    const rarityLabel = {
+        common: 'Commun',
+        rare: 'Rare',
+        epic: 'Épique',
+        legendary: 'Légendaire'
+    };
+
+    const garageStorageKey = 'creaforge3d_garage_v1';
+    let captures = JSON.parse(localStorage.getItem(garageStorageKey) || '[]');
+    if (!Array.isArray(captures)) {
+        captures = [];
+    }
+
+    const el = {
+        form: document.getElementById('carCaptureForm'),
+        player: document.getElementById('capturePlayer'),
+        brand: document.getElementById('carBrand'),
+        model: document.getElementById('carModel'),
+        rarity: document.getElementById('captureRarity'),
+        quality: document.getElementById('captureQuality'),
+        photoLive: document.getElementById('capturePhotoLive'),
+        gpsOk: document.getElementById('captureGpsOk'),
+        timeOk: document.getElementById('captureTimeOk'),
+        filter: document.getElementById('garageFilter'),
+        garageList: document.getElementById('garageList'),
+        totalPoints: document.getElementById('baseTotalPoints'),
+        totalCaptures: document.getElementById('baseTotalCaptures'),
+        uniqueCars: document.getElementById('baseUniqueCars'),
+        legendaryCount: document.getElementById('baseLegendaryCount'),
+        commonCount: document.getElementById('baseCommonCount'),
+        rareCount: document.getElementById('baseRareCount'),
+        epicCount: document.getElementById('baseEpicCount'),
+        legendaryRarityCount: document.getElementById('baseLegendaryRarityCount'),
+        badge: document.getElementById('baseBadge')
+    };
+
+    function normalizeText(value) {
+        return value.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function saveGarage() {
+        localStorage.setItem(garageStorageKey, JSON.stringify(captures));
+    }
+
+    function getBadge(totalPoints, legendaryCount) {
+        if (legendaryCount >= 5 || totalPoints >= 3000) {
+            return 'Chasseur légendaire';
+        }
+        if (totalPoints >= 1500) {
+            return 'Pilote Élite';
+        }
+        if (totalPoints >= 700) {
+            return 'Collectionneur Expert';
+        }
+        if (totalPoints >= 250) {
+            return 'Collectionneur';
+        }
+        return 'Débutant';
+    }
+
+    function renderGarage() {
+        const activeFilter = el.filter.value;
+        const filtered = activeFilter === 'all'
+            ? captures
+            : captures.filter((capture) => capture.rarity === activeFilter);
+
+        if (!filtered.length) {
+            el.garageList.innerHTML = '<li>Aucune capture pour le moment.</li>';
+        } else {
+            el.garageList.innerHTML = filtered.slice(0, 20).map((capture) => (
+                `<li><strong>${capture.brand} ${capture.model}</strong> · ${rarityLabel[capture.rarity]} · Qualité ${capture.quality}/5 · +${capture.points} pts · ${capture.player} · ${new Date(capture.date).toLocaleString('fr-FR')}</li>`
+            )).join('');
+        }
+
+        const totalPoints = captures.reduce((sum, capture) => sum + capture.points, 0);
+        const uniqueModels = new Set(captures.map((capture) => capture.modelKey)).size;
+        const countByRarity = {
+            common: captures.filter((capture) => capture.rarity === 'common').length,
+            rare: captures.filter((capture) => capture.rarity === 'rare').length,
+            epic: captures.filter((capture) => capture.rarity === 'epic').length,
+            legendary: captures.filter((capture) => capture.rarity === 'legendary').length
+        };
+
+        el.totalPoints.textContent = totalPoints;
+        el.totalCaptures.textContent = captures.length;
+        el.uniqueCars.textContent = uniqueModels;
+        el.legendaryCount.textContent = countByRarity.legendary;
+        el.commonCount.textContent = countByRarity.common;
+        el.rareCount.textContent = countByRarity.rare;
+        el.epicCount.textContent = countByRarity.epic;
+        el.legendaryRarityCount.textContent = countByRarity.legendary;
+        el.badge.textContent = `Badge actuel: ${getBadge(totalPoints, countByRarity.legendary)}`;
+    }
+
+    function isCaptureValid() {
+        return el.photoLive.checked && el.gpsOk.checked && el.timeOk.checked;
+    }
+
+    el.form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        if (!isCaptureValid()) {
+            showNotification('Capture refusée: photo live, géolocalisation et horodatage sont requis.', 'info');
+            return;
+        }
+
+        const player = el.player.value.trim() || 'Joueur';
+        const brand = el.brand.value.trim();
+        const model = el.model.value.trim();
+
+        if (!brand || !model) {
+            showNotification('Marque et modèle sont obligatoires.', 'info');
+            return;
+        }
+
+        const rarity = el.rarity.value;
+        const quality = Number(el.quality.value);
+        const modelKey = normalizeText(`${brand} ${model}`);
+        const duplicateCount = captures.filter((capture) => capture.modelKey === modelKey).length;
+
+        if (duplicateCount >= 3) {
+            showNotification('Limite de doublons atteinte pour ce modèle (max 3 captures).', 'info');
+            return;
+        }
+
+        const firstDiscovery = duplicateCount === 0;
+        const qualityMultiplier = 0.8 + (quality * 0.1);
+        const duplicateMultiplier = duplicateCount > 0 ? 0.6 : 1;
+        const firstDiscoveryBonus = firstDiscovery ? 20 : 0;
+        const points = Math.round((rarityPoints[rarity] * qualityMultiplier * duplicateMultiplier) + firstDiscoveryBonus);
+
+        captures.unshift({
+            player,
+            brand,
+            model,
+            rarity,
+            quality,
+            points,
+            date: new Date().toISOString(),
+            modelKey
+        });
+
+        saveGarage();
+        renderGarage();
+        el.brand.value = '';
+        el.model.value = '';
+        showNotification(`Capture validée: ${brand} ${model} (+${points} pts).`, 'success');
+    });
+
+    el.filter.addEventListener('change', renderGarage);
+    renderGarage();
+});
+
 // Mode course 1v1
 document.addEventListener('DOMContentLoaded', () => {
     const duelRoot = document.getElementById('duels');

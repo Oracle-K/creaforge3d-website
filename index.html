@@ -19,6 +19,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item"><a href="#accueil" class="nav-link">Accueil</a></li>
+                <li class="nav-item"><a href="#app-base" class="nav-link">Base Appli</a></li>
                 <li class="nav-item"><a href="#produits" class="nav-link">Produits</a></li>
                 <li class="nav-item"><a href="#duels" class="nav-link">Course 1v1</a></li>
                 <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
@@ -48,6 +49,94 @@
                 <div class="printer-animation">
                     <i class="fas fa-cube"></i>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Base Section -->
+    <section id="app-base" class="app-base">
+        <div class="container">
+            <h2 class="section-title">Base de l'application capture de voitures</h2>
+            <p class="app-base-intro">Prenez une photo d'une voiture, validez la capture, gagnez des points selon la rareté et construisez votre garage.</p>
+            <div class="app-base-grid">
+                <article class="app-base-card">
+                    <h3>Nouvelle capture</h3>
+                    <form id="carCaptureForm" class="app-capture-form">
+                        <div class="form-group">
+                            <label for="capturePlayer">Joueur</label>
+                            <input type="text" id="capturePlayer" value="Joueur 1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carBrand">Marque</label>
+                            <input type="text" id="carBrand" placeholder="Ex: Ferrari" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="carModel">Modèle</label>
+                            <input type="text" id="carModel" placeholder="Ex: F40" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="captureRarity">Rareté</label>
+                            <select id="captureRarity">
+                                <option value="common">Commun</option>
+                                <option value="rare">Rare</option>
+                                <option value="epic">Épique</option>
+                                <option value="legendary">Légendaire</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="captureQuality">Qualité photo</label>
+                            <select id="captureQuality">
+                                <option value="1">1/5</option>
+                                <option value="2">2/5</option>
+                                <option value="3" selected>3/5</option>
+                                <option value="4">4/5</option>
+                                <option value="5">5/5</option>
+                            </select>
+                        </div>
+                        <div class="app-checks">
+                            <label><input type="checkbox" id="capturePhotoLive" checked> Photo prise en direct</label>
+                            <label><input type="checkbox" id="captureGpsOk" checked> Géolocalisation valide</label>
+                            <label><input type="checkbox" id="captureTimeOk" checked> Horodatage valide</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Valider la capture</button>
+                    </form>
+                    <p class="app-note">Anti-triche: les captures non conformes sont refusées et les doublons sont limités.</p>
+                </article>
+
+                <article class="app-base-card">
+                    <h3>Garage & progression</h3>
+                    <div class="app-stats-grid">
+                        <div class="app-stat"><span>Points</span><strong id="baseTotalPoints">0</strong></div>
+                        <div class="app-stat"><span>Captures</span><strong id="baseTotalCaptures">0</strong></div>
+                        <div class="app-stat"><span>Voitures uniques</span><strong id="baseUniqueCars">0</strong></div>
+                        <div class="app-stat"><span>Légendaires</span><strong id="baseLegendaryCount">0</strong></div>
+                    </div>
+
+                    <div class="app-progression">
+                        <h4>Collection par rareté</h4>
+                        <ul>
+                            <li>Commun: <strong id="baseCommonCount">0</strong></li>
+                            <li>Rare: <strong id="baseRareCount">0</strong></li>
+                            <li>Épique: <strong id="baseEpicCount">0</strong></li>
+                            <li>Légendaire: <strong id="baseLegendaryRarityCount">0</strong></li>
+                        </ul>
+                        <p id="baseBadge">Badge actuel: Débutant</p>
+                    </div>
+
+                    <div class="app-garage-controls">
+                        <label for="garageFilter">Filtrer le garage</label>
+                        <select id="garageFilter">
+                            <option value="all">Toutes raretés</option>
+                            <option value="common">Commun</option>
+                            <option value="rare">Rare</option>
+                            <option value="epic">Épique</option>
+                            <option value="legendary">Légendaire</option>
+                        </select>
+                    </div>
+                    <ul id="garageList" class="garage-list">
+                        <li>Aucune capture pour le moment.</li>
+                    </ul>
+                </article>
             </div>
         </div>
     </section>
