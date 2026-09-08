@@ -20,6 +20,7 @@
             <ul class="nav-menu">
                 <li class="nav-item"><a href="#accueil" class="nav-link">Accueil</a></li>
                 <li class="nav-item"><a href="#produits" class="nav-link">Produits</a></li>
+                <li class="nav-item"><a href="#duels" class="nav-link">Course 1v1</a></li>
                 <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
                 <li class="nav-item"><a href="#about" class="nav-link">À Propos</a></li>
                 <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
@@ -165,6 +166,126 @@
                         <button class="btn btn-small">Commander</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Duels Section -->
+    <section id="duels" class="duels">
+        <div class="container">
+            <h2 class="section-title">Mode Course 1v1</h2>
+            <p class="duels-intro">Lancez un duel entre 2 joueurs avec score en direct, règles anti-triche et historique des courses.</p>
+
+            <div class="duel-challenge-card">
+                <h3>Défi direct</h3>
+                <div class="duel-challenge-form">
+                    <input type="text" id="challengerName" placeholder="Joueur 1 (challenger)" value="Joueur 1">
+                    <input type="text" id="opponentName" placeholder="Joueur 2 (adversaire)" value="Joueur 2">
+                    <button class="btn btn-small" id="sendChallengeBtn">Envoyer le défi</button>
+                    <button class="btn btn-small btn-secondary-duel" id="acceptChallengeBtn">Accepter</button>
+                    <button class="btn btn-small btn-danger-duel" id="refuseChallengeBtn">Refuser</button>
+                </div>
+                <p class="duel-status" id="duelStatus">Statut: en attente d'un défi.</p>
+            </div>
+
+            <div class="duel-config">
+                <h3>Type de course</h3>
+                <div class="duel-config-grid">
+                    <div class="form-group">
+                        <label for="raceType">Mode</label>
+                        <select id="raceType">
+                            <option value="time">Temps limité</option>
+                            <option value="score">Objectif score</option>
+                            <option value="hunt">Chasse ciblée</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="raceDuration">Durée (minutes)</label>
+                        <input type="number" id="raceDuration" min="1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="scoreTarget">Score cible</label>
+                        <input type="number" id="scoreTarget" min="50" value="500">
+                    </div>
+                    <div class="form-group">
+                        <label for="huntTargets">Voitures à trouver (séparées par virgule)</label>
+                        <input type="text" id="huntTargets" value="ferrari, porsche, lamborghini">
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="startRaceBtn" disabled>Démarrer la course</button>
+                <button class="btn btn-danger-duel" id="stopRaceBtn" disabled>Terminer la course</button>
+            </div>
+
+            <div class="duel-live-board">
+                <div class="duel-header">
+                    <h3>Course en direct</h3>
+                    <div class="duel-timer" id="duelTimer">10:00</div>
+                </div>
+                <div class="duel-players-grid">
+                    <article class="duel-player-card" data-player="0">
+                        <h4 id="playerOneTitle">Joueur 1</h4>
+                        <p class="duel-score">Score: <strong id="player1Score">0</strong></p>
+                        <p>Captures: <span id="player1Captures">0</span></p>
+                        <p>Meilleure rareté: <span id="player1BestRarity">Aucune</span></p>
+                        <div class="duel-capture-controls">
+                            <select id="player1Rarity">
+                                <option value="common">Commun</option>
+                                <option value="rare">Rare</option>
+                                <option value="epic">Épique</option>
+                                <option value="legendary">Légendaire</option>
+                            </select>
+                            <select id="player1Quality">
+                                <option value="1">Qualité 1/5</option>
+                                <option value="2">Qualité 2/5</option>
+                                <option value="3" selected>Qualité 3/5</option>
+                                <option value="4">Qualité 4/5</option>
+                                <option value="5">Qualité 5/5</option>
+                            </select>
+                            <input type="text" id="player1Model" placeholder="Modèle capturé (optionnel)">
+                            <label><input type="checkbox" id="player1FirstCaptureBonus"> Bonus 1ère capture</label>
+                            <label><input type="checkbox" id="player1PhotoLive" checked> Photo prise pendant la course</label>
+                            <label><input type="checkbox" id="player1GpsOk" checked> Géolocalisation validée</label>
+                            <label><input type="checkbox" id="player1TimeOk" checked> Horodatage validé</label>
+                            <button class="btn btn-small duel-capture-btn" id="player1CaptureBtn">Ajouter capture</button>
+                        </div>
+                    </article>
+                    <article class="duel-player-card" data-player="1">
+                        <h4 id="playerTwoTitle">Joueur 2</h4>
+                        <p class="duel-score">Score: <strong id="player2Score">0</strong></p>
+                        <p>Captures: <span id="player2Captures">0</span></p>
+                        <p>Meilleure rareté: <span id="player2BestRarity">Aucune</span></p>
+                        <div class="duel-capture-controls">
+                            <select id="player2Rarity">
+                                <option value="common">Commun</option>
+                                <option value="rare">Rare</option>
+                                <option value="epic">Épique</option>
+                                <option value="legendary">Légendaire</option>
+                            </select>
+                            <select id="player2Quality">
+                                <option value="1">Qualité 1/5</option>
+                                <option value="2">Qualité 2/5</option>
+                                <option value="3" selected>Qualité 3/5</option>
+                                <option value="4">Qualité 4/5</option>
+                                <option value="5">Qualité 5/5</option>
+                            </select>
+                            <input type="text" id="player2Model" placeholder="Modèle capturé (optionnel)">
+                            <label><input type="checkbox" id="player2FirstCaptureBonus"> Bonus 1ère capture</label>
+                            <label><input type="checkbox" id="player2PhotoLive" checked> Photo prise pendant la course</label>
+                            <label><input type="checkbox" id="player2GpsOk" checked> Géolocalisation validée</label>
+                            <label><input type="checkbox" id="player2TimeOk" checked> Horodatage validé</label>
+                            <button class="btn btn-small duel-capture-btn" id="player2CaptureBtn">Ajouter capture</button>
+                        </div>
+                    </article>
+                </div>
+                <p class="duel-winner" id="duelWinner">Aucune course active.</p>
+            </div>
+
+            <div class="duel-history">
+                <h3>Historique & Classement</h3>
+                <div class="duel-leaderboard" id="duelLeaderboard"></div>
+                <ul id="duelHistoryList">
+                    <li>Aucune course enregistrée.</li>
+                </ul>
             </div>
         </div>
     </section>

@@ -232,3 +232,359 @@ document.addEventListener('DOMContentLoaded', () => {
         statsObserver.observe(aboutSection);
     }
 });
+
+// Mode course 1v1
+document.addEventListener('DOMContentLoaded', () => {
+    const duelRoot = document.getElementById('duels');
+    if (!duelRoot) {
+        return;
+    }
+
+    const rarityPoints = {
+        common: 10,
+        rare: 25,
+        epic: 50,
+        legendary: 100
+    };
+
+    const rarityLabels = {
+        common: 'Commun',
+        rare: 'Rare',
+        epic: 'Épique',
+        legendary: 'Légendaire'
+    };
+
+    const rarityRank = {
+        common: 1,
+        rare: 2,
+        epic: 3,
+        legendary: 4
+    };
+
+    const state = {
+        challengeAccepted: false,
+        raceActive: false,
+        mode: 'time',
+        timeLeft: 600,
+        timer: null,
+        huntTargets: [],
+        players: [
+            { name: 'Joueur 1', score: 0, captures: 0, bestRarity: 'common', foundTargets: new Set() },
+            { name: 'Joueur 2', score: 0, captures: 0, bestRarity: 'common', foundTargets: new Set() }
+        ]
+    };
+
+    const historyKey = 'creaforge3d_duel_history';
+    const history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+
+    const el = {
+        challengerName: document.getElementById('challengerName'),
+        opponentName: document.getElementById('opponentName'),
+        sendChallengeBtn: document.getElementById('sendChallengeBtn'),
+        acceptChallengeBtn: document.getElementById('acceptChallengeBtn'),
+        refuseChallengeBtn: document.getElementById('refuseChallengeBtn'),
+        duelStatus: document.getElementById('duelStatus'),
+        raceType: document.getElementById('raceType'),
+        raceDuration: document.getElementById('raceDuration'),
+        scoreTarget: document.getElementById('scoreTarget'),
+        huntTargets: document.getElementById('huntTargets'),
+        startRaceBtn: document.getElementById('startRaceBtn'),
+        stopRaceBtn: document.getElementById('stopRaceBtn'),
+        timer: document.getElementById('duelTimer'),
+        winner: document.getElementById('duelWinner'),
+        p1Title: document.getElementById('playerOneTitle'),
+        p2Title: document.getElementById('playerTwoTitle'),
+        p1Score: document.getElementById('player1Score'),
+        p2Score: document.getElementById('player2Score'),
+        p1Captures: document.getElementById('player1Captures'),
+        p2Captures: document.getElementById('player2Captures'),
+        p1BestRarity: document.getElementById('player1BestRarity'),
+        p2BestRarity: document.getElementById('player2BestRarity'),
+        p1Rarity: document.getElementById('player1Rarity'),
+        p2Rarity: document.getElementById('player2Rarity'),
+        p1Quality: document.getElementById('player1Quality'),
+        p2Quality: document.getElementById('player2Quality'),
+        p1Model: document.getElementById('player1Model'),
+        p2Model: document.getElementById('player2Model'),
+        p1Bonus: document.getElementById('player1FirstCaptureBonus'),
+        p2Bonus: document.getElementById('player2FirstCaptureBonus'),
+        p1PhotoLive: document.getElementById('player1PhotoLive'),
+        p2PhotoLive: document.getElementById('player2PhotoLive'),
+        p1GpsOk: document.getElementById('player1GpsOk'),
+        p2GpsOk: document.getElementById('player2GpsOk'),
+        p1TimeOk: document.getElementById('player1TimeOk'),
+        p2TimeOk: document.getElementById('player2TimeOk'),
+        p1CaptureBtn: document.getElementById('player1CaptureBtn'),
+        p2CaptureBtn: document.getElementById('player2CaptureBtn'),
+        leaderboard: document.getElementById('duelLeaderboard'),
+        historyList: document.getElementById('duelHistoryList')
+    };
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+        const secs = (seconds % 60).toString().padStart(2, '0');
+        return `${mins}:${secs}`;
+    }
+
+    function updateBoard() {
+        el.p1Title.textContent = state.players[0].name;
+        el.p2Title.textContent = state.players[1].name;
+        el.p1Score.textContent = state.players[0].score;
+        el.p2Score.textContent = state.players[1].score;
+        el.p1Captures.textContent = state.players[0].captures;
+        el.p2Captures.textContent = state.players[1].captures;
+        el.p1BestRarity.textContent = state.players[0].captures ? rarityLabels[state.players[0].bestRarity] : 'Aucune';
+        el.p2BestRarity.textContent = state.players[1].captures ? rarityLabels[state.players[1].bestRarity] : 'Aucune';
+        el.timer.textContent = formatTime(state.timeLeft);
+    }
+
+    function saveHistory() {
+        localStorage.setItem(historyKey, JSON.stringify(history));
+    }
+
+    function renderHistoryAndLeaderboard() {
+        if (!history.length) {
+            el.historyList.innerHTML = '<li>Aucune course enregistrée.</li>';
+            el.leaderboard.innerHTML = '';
+            return;
+        }
+
+        const sorted = [...history].sort((a, b) => new Date(b.date) - new Date(a.date));
+        el.historyList.innerHTML = sorted.slice(0, 10).map((item) => (
+            `<li><strong>${item.winner}</strong> a gagné (${item.mode}) contre ${item.loser} - ${item.score1} / ${item.score2} · Badge: ${item.badge} · ${new Date(item.date).toLocaleString('fr-FR')}</li>`
+        )).join('');
+
+        const winTable = {};
+        history.forEach((race) => {
+            winTable[race.winner] = (winTable[race.winner] || 0) + 1;
+        });
+        const ranked = Object.entries(winTable).sort((a, b) => b[1] - a[1]);
+        el.leaderboard.innerHTML = ranked.map(([name, wins]) => (
+            `<span class="duel-leaderboard-item">${name}: ${wins} victoire${wins > 1 ? 's' : ''}</span>`
+        )).join('');
+    }
+
+    function setRaceButtons() {
+        el.startRaceBtn.disabled = !state.challengeAccepted || state.raceActive;
+        el.stopRaceBtn.disabled = !state.raceActive;
+    }
+
+    function resetRaceStats() {
+        state.players = state.players.map((player) => ({
+            ...player,
+            score: 0,
+            captures: 0,
+            bestRarity: 'common',
+            foundTargets: new Set()
+        }));
+        el.p1Bonus.checked = false;
+        el.p2Bonus.checked = false;
+        el.p1Model.value = '';
+        el.p2Model.value = '';
+    }
+
+    function getBadge(winner) {
+        if (state.mode === 'time') {
+            return 'Sprinteur';
+        }
+        if (state.mode === 'hunt') {
+            return 'Tracker';
+        }
+        if (rarityRank[winner.bestRarity] >= rarityRank.legendary) {
+            return 'Chasseur Légendaire';
+        }
+        return 'Dueliste';
+    }
+
+    function stopRace(reason = 'Course terminée.') {
+        if (!state.raceActive) {
+            return;
+        }
+
+        clearInterval(state.timer);
+        state.raceActive = false;
+        setRaceButtons();
+
+        const [p1, p2] = state.players;
+        let winner = null;
+        let loser = null;
+
+        if (p1.score > p2.score) {
+            winner = p1;
+            loser = p2;
+        } else if (p2.score > p1.score) {
+            winner = p2;
+            loser = p1;
+        } else if (rarityRank[p1.bestRarity] > rarityRank[p2.bestRarity]) {
+            winner = p1;
+            loser = p2;
+        } else if (rarityRank[p2.bestRarity] > rarityRank[p1.bestRarity]) {
+            winner = p2;
+            loser = p1;
+        } else {
+            el.winner.textContent = `${reason} Égalité parfaite entre ${p1.name} et ${p2.name}.`;
+            showNotification('Course terminée sur une égalité parfaite.', 'info');
+            updateBoard();
+            return;
+        }
+
+        const badge = getBadge(winner);
+        el.winner.textContent = `${reason} Vainqueur: ${winner.name} (${winner.score} pts).`;
+        history.push({
+            date: new Date().toISOString(),
+            mode: state.mode,
+            winner: winner.name,
+            loser: loser.name,
+            score1: p1.score,
+            score2: p2.score,
+            badge
+        });
+        saveHistory();
+        renderHistoryAndLeaderboard();
+        showNotification(`🏁 ${winner.name} remporte la course ! Badge: ${badge}`, 'success');
+        updateBoard();
+    }
+
+    function updateRaceByMode() {
+        state.mode = el.raceType.value;
+        if (state.mode === 'time') {
+            state.timeLeft = Number(el.raceDuration.value || 10) * 60;
+        }
+        if (state.mode === 'hunt') {
+            state.huntTargets = el.huntTargets.value
+                .split(',')
+                .map((item) => item.trim().toLowerCase())
+                .filter(Boolean);
+        }
+        updateBoard();
+    }
+
+    function startRace() {
+        if (!state.challengeAccepted) {
+            showNotification('Acceptez un défi avant de démarrer une course.', 'info');
+            return;
+        }
+        if (state.raceActive) {
+            return;
+        }
+
+        state.players[0].name = el.challengerName.value.trim() || 'Joueur 1';
+        state.players[1].name = el.opponentName.value.trim() || 'Joueur 2';
+        resetRaceStats();
+        updateRaceByMode();
+        state.raceActive = true;
+        setRaceButtons();
+        el.winner.textContent = 'Course active. Capturez des voitures pour marquer !';
+        showNotification('Course 1v1 démarrée !', 'success');
+
+        if (state.mode === 'time') {
+            state.timer = setInterval(() => {
+                state.timeLeft -= 1;
+                if (state.timeLeft <= 0) {
+                    state.timeLeft = 0;
+                    updateBoard();
+                    stopRace('Temps écoulé.');
+                    return;
+                }
+                updateBoard();
+            }, 1000);
+        }
+
+        updateBoard();
+    }
+
+    function antiCheatValid(playerIndex) {
+        const checks = playerIndex === 0
+            ? [el.p1PhotoLive.checked, el.p1GpsOk.checked, el.p1TimeOk.checked]
+            : [el.p2PhotoLive.checked, el.p2GpsOk.checked, el.p2TimeOk.checked];
+        return checks.every(Boolean);
+    }
+
+    function handleCapture(playerIndex) {
+        if (!state.raceActive) {
+            showNotification('Aucune course active.', 'info');
+            return;
+        }
+        if (!antiCheatValid(playerIndex)) {
+            showNotification('Capture refusée: vérifiez photo live, géolocalisation et horodatage.', 'info');
+            return;
+        }
+
+        const player = state.players[playerIndex];
+        const raritySelect = playerIndex === 0 ? el.p1Rarity : el.p2Rarity;
+        const qualitySelect = playerIndex === 0 ? el.p1Quality : el.p2Quality;
+        const modelInput = playerIndex === 0 ? el.p1Model : el.p2Model;
+        const bonusInput = playerIndex === 0 ? el.p1Bonus : el.p2Bonus;
+
+        const rarity = raritySelect.value;
+        const quality = Number(qualitySelect.value);
+        const model = modelInput.value.trim().toLowerCase();
+        const qualityMultiplier = 0.8 + (quality * 0.1);
+        const bonus = bonusInput.checked ? 30 : 0;
+        const points = Math.round((rarityPoints[rarity] * qualityMultiplier) + bonus);
+
+        player.score += points;
+        player.captures += 1;
+        if (rarityRank[rarity] > rarityRank[player.bestRarity]) {
+            player.bestRarity = rarity;
+        }
+        if (state.mode === 'hunt' && model && state.huntTargets.includes(model)) {
+            player.foundTargets.add(model);
+        }
+
+        bonusInput.checked = false;
+        modelInput.value = '';
+        updateBoard();
+
+        if (state.mode === 'score') {
+            const target = Number(el.scoreTarget.value || 500);
+            if (player.score >= target) {
+                stopRace(`Objectif score atteint (${target} pts).`);
+                return;
+            }
+        }
+
+        if (state.mode === 'hunt' && state.huntTargets.length) {
+            if (player.foundTargets.size === state.huntTargets.length) {
+                stopRace('Liste de chasse complétée.');
+            }
+        }
+    }
+
+    el.sendChallengeBtn.addEventListener('click', () => {
+        const player1 = el.challengerName.value.trim() || 'Joueur 1';
+        const player2 = el.opponentName.value.trim() || 'Joueur 2';
+        state.challengeAccepted = false;
+        setRaceButtons();
+        el.duelStatus.textContent = `Statut: ${player1} a défié ${player2}. En attente de réponse.`;
+        showNotification('Défi envoyé.', 'info');
+    });
+
+    el.acceptChallengeBtn.addEventListener('click', () => {
+        state.challengeAccepted = true;
+        setRaceButtons();
+        el.duelStatus.textContent = 'Statut: défi accepté. Vous pouvez démarrer la course.';
+        showNotification('Défi accepté.', 'success');
+    });
+
+    el.refuseChallengeBtn.addEventListener('click', () => {
+        state.challengeAccepted = false;
+        if (state.raceActive) {
+            stopRace('Course annulée.');
+        }
+        setRaceButtons();
+        el.duelStatus.textContent = 'Statut: défi refusé.';
+        showNotification('Défi refusé.', 'info');
+    });
+
+    el.startRaceBtn.addEventListener('click', startRace);
+    el.stopRaceBtn.addEventListener('click', () => stopRace('Course arrêtée manuellement.'));
+    el.raceType.addEventListener('change', updateRaceByMode);
+    el.p1CaptureBtn.addEventListener('click', () => handleCapture(0));
+    el.p2CaptureBtn.addEventListener('click', () => handleCapture(1));
+
+    updateRaceByMode();
+    updateBoard();
+    renderHistoryAndLeaderboard();
+    setRaceButtons();
+});
