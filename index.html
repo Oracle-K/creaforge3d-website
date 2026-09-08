@@ -19,6 +19,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item"><a href="#accueil" class="nav-link">Accueil</a></li>
+                <li class="nav-item"><a href="#app-visual" class="nav-link">Visuel App</a></li>
                 <li class="nav-item"><a href="#app-base" class="nav-link">Base Appli</a></li>
                 <li class="nav-item"><a href="#produits" class="nav-link">Produits</a></li>
                 <li class="nav-item"><a href="#duels" class="nav-link">Course 1v1</a></li>
@@ -48,6 +49,117 @@
             <div class="hero-image">
                 <div class="printer-animation">
                     <i class="fas fa-cube"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Visual Section -->
+    <section id="app-visual" class="app-visual">
+        <div class="container">
+            <h2 class="section-title">Visuel de l'application mobile</h2>
+            <p class="app-visual-intro">Prototype visuel pour présenter l'expérience joueur de bout en bout.</p>
+            <div class="app-visual-actions">
+                <button class="btn btn-primary" id="runVisualDemoBtn">Lancer une démo guidée</button>
+                <button class="btn btn-secondary app-visual-reset-btn" id="resetVisualDemoBtn">Réinitialiser la démo</button>
+            </div>
+            <div class="app-visual-tabs">
+                <button class="visual-tab-btn active" data-visual-screen="home">Accueil</button>
+                <button class="visual-tab-btn" data-visual-screen="capture">Capture</button>
+                <button class="visual-tab-btn" data-visual-screen="garage">Garage</button>
+                <button class="visual-tab-btn" data-visual-screen="duel">Duel</button>
+                <button class="visual-tab-btn" data-visual-screen="history">Historique</button>
+            </div>
+
+            <div class="mobile-preview-shell">
+                <div class="phone-notch"></div>
+                <div class="mobile-preview-screen visual-screen active" data-screen="home">
+                    <div class="mobile-screen-header">
+                        <div class="mobile-avatar">JK</div>
+                        <div>
+                            <h3>Salut, Joueur 1 👋</h3>
+                            <p>Niveau <strong id="visualLevel">1</strong> · <span id="visualXp">0 XP</span></p>
+                        </div>
+                    </div>
+                    <div class="mobile-kpi-grid">
+                        <article><span>Points</span><strong id="visualPoints">0</strong></article>
+                        <article><span>Captures</span><strong id="visualCaptures">0</strong></article>
+                        <article><span>Rareté max</span><strong id="visualTopRarity">Aucune</strong></article>
+                        <article><span>Série</span><strong id="visualStreak">0</strong></article>
+                    </div>
+                    <div class="mobile-placeholder-list">
+                        <div class="car-placeholder-card">
+                            <i class="fas fa-car-side"></i>
+                            <div>
+                                <strong>Mission du jour</strong>
+                                <p>Trouver une voiture épique ou légendaire</p>
+                            </div>
+                        </div>
+                        <div class="car-placeholder-card">
+                            <i class="fas fa-bullseye"></i>
+                            <div>
+                                <strong>Objectif actif</strong>
+                                <p>3 captures valides pour bonus +50</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="capture">
+                    <h3>Écran Capture</h3>
+                    <p class="screen-subtitle">Exemple de validation en direct</p>
+                    <div class="capture-photo-preview">
+                        <i class="fas fa-camera-retro"></i>
+                        <p>Aperçu photo en direct</p>
+                    </div>
+                    <div class="rarity-chip-row">
+                        <span class="rarity-chip rarity-common">Commun</span>
+                        <span class="rarity-chip rarity-rare">Rare</span>
+                        <span class="rarity-chip rarity-epic">Épique</span>
+                        <span class="rarity-chip rarity-legendary">Légendaire</span>
+                    </div>
+                    <ul class="app-checklist">
+                        <li class="done">✅ Photo live</li>
+                        <li class="done">✅ Géolocalisation</li>
+                        <li class="done">✅ Horodatage</li>
+                    </ul>
+                    <p id="visualLastCapture">Aucune capture simulée.</p>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="garage">
+                    <h3>Écran Garage</h3>
+                    <p class="screen-subtitle">Collection avec états visuels</p>
+                    <div class="garage-mini-list" id="visualGarageList">
+                        <p class="garage-empty-state">Aucune voiture collectée pour l’instant.</p>
+                    </div>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="duel">
+                    <h3>Écran Duel 1v1</h3>
+                    <p class="screen-subtitle">Score live entre 2 joueurs</p>
+                    <div class="duel-mini-card">
+                        <div><span>Joueur 1</span><strong id="visualDuelP1">0</strong></div>
+                        <div><span>Joueur 2</span><strong id="visualDuelP2">0</strong></div>
+                    </div>
+                    <p id="visualDuelStatus">Défi non démarré.</p>
+                    <div class="duel-mini-progress">
+                        <div id="visualDuelBar"></div>
+                    </div>
+                </div>
+
+                <div class="mobile-preview-screen visual-screen" data-screen="history">
+                    <h3>Écran Historique</h3>
+                    <p class="screen-subtitle">Résultats récents et badges</p>
+                    <ul class="visual-history-list" id="visualHistoryList">
+                        <li>Aucun événement de démo pour le moment.</li>
+                    </ul>
+                </div>
+                <div class="mobile-bottom-nav">
+                    <button class="visual-tab-btn active" data-visual-screen="home"><i class="fas fa-house"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="capture"><i class="fas fa-camera"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="garage"><i class="fas fa-warehouse"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="duel"><i class="fas fa-flag-checkered"></i></button>
+                    <button class="visual-tab-btn" data-visual-screen="history"><i class="fas fa-clock-rotate-left"></i></button>
                 </div>
             </div>
         </div>
@@ -101,6 +213,7 @@
                         <button type="submit" class="btn btn-primary">Valider la capture</button>
                     </form>
                     <p class="app-note">Anti-triche: les captures non conformes sont refusées et les doublons sont limités.</p>
+                    <button type="button" class="btn btn-small app-seed-btn" id="seedGarageBtn">Charger des données de démo</button>
                 </article>
 
                 <article class="app-base-card">

@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         photoLive: document.getElementById('capturePhotoLive'),
         gpsOk: document.getElementById('captureGpsOk'),
         timeOk: document.getElementById('captureTimeOk'),
+        seedButton: document.getElementById('seedGarageBtn'),
         filter: document.getElementById('garageFilter'),
         garageList: document.getElementById('garageList'),
         totalPoints: document.getElementById('baseTotalPoints'),
@@ -351,6 +352,44 @@ document.addEventListener('DOMContentLoaded', () => {
         return el.photoLive.checked && el.gpsOk.checked && el.timeOk.checked;
     }
 
+    function seedDemoCaptures() {
+        const demoCars = [
+            { player: 'Démo', brand: 'Ferrari', model: 'F40', rarity: 'legendary', quality: 5 },
+            { player: 'Démo', brand: 'Porsche', model: '911 Turbo S', rarity: 'epic', quality: 4 },
+            { player: 'Démo', brand: 'Toyota', model: 'Supra MK4', rarity: 'rare', quality: 4 }
+        ];
+
+        const existing = new Set(captures.map((capture) => capture.modelKey));
+        let added = 0;
+
+        demoCars.forEach((car) => {
+            const modelKey = normalizeText(`${car.brand} ${car.model}`);
+            if (existing.has(modelKey)) {
+                return;
+            }
+
+            const qualityMultiplier = 0.8 + (car.quality * 0.1);
+            const points = Math.round((rarityPoints[car.rarity] * qualityMultiplier) + 20);
+            captures.unshift({
+                ...car,
+                points,
+                date: new Date().toISOString(),
+                modelKey
+            });
+            existing.add(modelKey);
+            added += 1;
+        });
+
+        if (!added) {
+            showNotification('Les données de démo sont déjà chargées.', 'info');
+            return;
+        }
+
+        saveGarage();
+        renderGarage();
+        showNotification(`${added} voiture(s) de démo ajoutée(s) au garage.`, 'success');
+    }
+
     el.form.addEventListener('submit', (event) => {
         event.preventDefault();
 
@@ -403,7 +442,199 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     el.filter.addEventListener('change', renderGarage);
+    if (el.seedButton) {
+        el.seedButton.addEventListener('click', seedDemoCaptures);
+    }
     renderGarage();
+});
+
+// Prévisualisation mobile de l'application
+document.addEventListener('DOMContentLoaded', () => {
+    const visualRoot = document.getElementById('app-visual');
+    if (!visualRoot) {
+        return;
+    }
+
+    const rarityRank = { Aucune: 0, Commun: 1, Rare: 2, Épique: 3, Légendaire: 4 };
+    const visualState = {
+        points: 0,
+        captures: 0,
+        topRarity: 'Aucune',
+        streak: 0,
+        xp: 0,
+        level: 1,
+        garage: [],
+        duelP1: 0,
+        duelP2: 0,
+        duelStatus: 'Défi non démarré.',
+        history: []
+    };
+
+    const visualEl = {
+        tabButtons: document.querySelectorAll('.visual-tab-btn'),
+        screens: document.querySelectorAll('.visual-screen'),
+        runDemoBtn: document.getElementById('runVisualDemoBtn'),
+        resetDemoBtn: document.getElementById('resetVisualDemoBtn'),
+        points: document.getElementById('visualPoints'),
+        captures: document.getElementById('visualCaptures'),
+        topRarity: document.getElementById('visualTopRarity'),
+        streak: document.getElementById('visualStreak'),
+        xp: document.getElementById('visualXp'),
+        level: document.getElementById('visualLevel'),
+        lastCapture: document.getElementById('visualLastCapture'),
+        garageList: document.getElementById('visualGarageList'),
+        duelP1: document.getElementById('visualDuelP1'),
+        duelP2: document.getElementById('visualDuelP2'),
+        duelStatus: document.getElementById('visualDuelStatus'),
+        duelBar: document.getElementById('visualDuelBar'),
+        historyList: document.getElementById('visualHistoryList')
+    };
+
+    function setVisualScreen(screenName) {
+        visualEl.screens.forEach((screen) => {
+            screen.classList.toggle('active', screen.dataset.screen === screenName);
+        });
+        visualEl.tabButtons.forEach((btn) => {
+            btn.classList.toggle('active', btn.dataset.visualScreen === screenName);
+        });
+    }
+
+    function setTopRarity(label) {
+        if (rarityRank[label] > rarityRank[visualState.topRarity]) {
+            visualState.topRarity = label;
+        }
+    }
+
+    function renderVisualGarage() {
+        if (!visualState.garage.length) {
+            visualEl.garageList.innerHTML = '<p class="garage-empty-state">Aucune voiture collectée pour l’instant.</p>';
+            return;
+        }
+        visualEl.garageList.innerHTML = visualState.garage.slice(0, 4).map((car) => (
+            `<div class="garage-mini-item"><strong>${car.brand} ${car.model}</strong><br><span class="rarity-chip rarity-${car.rarity}">${car.rarityLabel}</span> · +${car.points} pts</div>`
+        )).join('');
+    }
+
+    function renderVisualHistory() {
+        if (!visualState.history.length) {
+            visualEl.historyList.innerHTML = '<li>Aucun événement de démo pour le moment.</li>';
+            return;
+        }
+        visualEl.historyList.innerHTML = visualState.history.slice(-6).reverse().map((item) => `<li>${item}</li>`).join('');
+    }
+
+    function renderVisualState() {
+        visualEl.points.textContent = visualState.points;
+        visualEl.captures.textContent = visualState.captures;
+        visualEl.topRarity.textContent = visualState.topRarity;
+        visualEl.streak.textContent = visualState.streak;
+        visualEl.xp.textContent = `${visualState.xp} XP`;
+        visualEl.level.textContent = visualState.level;
+        visualEl.duelP1.textContent = visualState.duelP1;
+        visualEl.duelP2.textContent = visualState.duelP2;
+        visualEl.duelStatus.textContent = visualState.duelStatus;
+
+        const total = Math.max(visualState.duelP1 + visualState.duelP2, 1);
+        const p1Ratio = Math.max(5, Math.min(95, Math.round((visualState.duelP1 / total) * 100)));
+        visualEl.duelBar.style.width = `${p1Ratio}%`;
+
+        renderVisualGarage();
+        renderVisualHistory();
+    }
+
+    function addVisualCapture({ brand, model, rarity, rarityLabel, points }) {
+        visualState.points += points;
+        visualState.captures += 1;
+        visualState.xp += points;
+        visualState.level = Math.max(1, Math.floor(visualState.xp / 150) + 1);
+        visualState.streak += 1;
+        setTopRarity(rarityLabel);
+        visualState.garage.unshift({ brand, model, rarity, rarityLabel, points });
+        visualEl.lastCapture.textContent = `Dernière capture: ${brand} ${model} (${rarityLabel}) +${points} pts`;
+        visualState.history.push(`Capture validée: ${brand} ${model} (+${points} pts).`);
+        renderVisualState();
+    }
+
+    function runGuidedDemo() {
+        visualState.points = 0;
+        visualState.captures = 0;
+        visualState.topRarity = 'Aucune';
+        visualState.streak = 0;
+        visualState.xp = 0;
+        visualState.level = 1;
+        visualState.garage = [];
+        visualState.duelP1 = 0;
+        visualState.duelP2 = 0;
+        visualState.duelStatus = 'Défi envoyé...';
+        visualState.history = ['Démo lancée: parcours Capture → Garage → Duel.'];
+        renderVisualState();
+        setVisualScreen('capture');
+
+        setTimeout(() => addVisualCapture({
+            brand: 'Ferrari',
+            model: 'F40',
+            rarity: 'legendary',
+            rarityLabel: 'Légendaire',
+            points: 140
+        }), 500);
+        setTimeout(() => addVisualCapture({
+            brand: 'Porsche',
+            model: '911 GT3',
+            rarity: 'epic',
+            rarityLabel: 'Épique',
+            points: 78
+        }), 1100);
+        setTimeout(() => {
+            setVisualScreen('garage');
+            visualState.history.push('Garage mis à jour avec les nouvelles captures.');
+            renderVisualState();
+        }, 1700);
+        setTimeout(() => {
+            setVisualScreen('duel');
+            visualState.duelP1 = 220;
+            visualState.duelP2 = 185;
+            visualState.duelStatus = 'Course active: Joueur 1 en tête.';
+            visualState.history.push('Duel 1v1 démarré avec score en direct.');
+            renderVisualState();
+        }, 2300);
+        setTimeout(() => {
+            visualState.duelP1 = 310;
+            visualState.duelP2 = 290;
+            visualState.duelStatus = 'Victoire Joueur 1, badge: Chasseur Légendaire.';
+            visualState.history.push('Résultat duel: victoire Joueur 1 et badge débloqué.');
+            setVisualScreen('history');
+            renderVisualState();
+            showNotification('Démo guidée terminée : parcours complet affiché.', 'success');
+        }, 3000);
+    }
+
+    function resetVisualDemo() {
+        visualState.points = 0;
+        visualState.captures = 0;
+        visualState.topRarity = 'Aucune';
+        visualState.streak = 0;
+        visualState.xp = 0;
+        visualState.level = 1;
+        visualState.garage = [];
+        visualState.duelP1 = 0;
+        visualState.duelP2 = 0;
+        visualState.duelStatus = 'Défi non démarré.';
+        visualState.history = [];
+        visualEl.lastCapture.textContent = 'Aucune capture simulée.';
+        setVisualScreen('home');
+        renderVisualState();
+    }
+
+    visualEl.tabButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            setVisualScreen(button.dataset.visualScreen);
+        });
+    });
+
+    visualEl.runDemoBtn.addEventListener('click', runGuidedDemo);
+    visualEl.resetDemoBtn.addEventListener('click', resetVisualDemo);
+
+    resetVisualDemo();
 });
 
 // Mode course 1v1
